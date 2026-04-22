@@ -1,17 +1,20 @@
 // src/App.jsx
-import { useDispatch, useSelector } from 'react-redux'
-import { decrement, increment } from './features/counter/counterSlice'
+import { Route, Routes } from 'react-router-dom'
+import PostPage from './features/posts/pages/PostPage'
+import SubredditPage from './features/subreddits/pages/SubredditPage'
+import Home from './pages/Home'
+import NotFound from './pages/NotFound'
+import Layout from './shared/components/Layout'
 
 export default function App() {
-  const count = useSelector((state) => state.counter.value)
-  const dispatch = useDispatch()
-
   return (
-    <div>
-      <h1>React Redux App</h1>
-      <p>Count: {count}</p>
-      <button onClick={() => dispatch(increment())}>Increment</button>
-      <button onClick={() => dispatch(decrement())}>Decrement</button>
-    </div>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts" element={<PostPage />} />
+        <Route path="/subreddits" element={<SubredditPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Layout>
   )
 }

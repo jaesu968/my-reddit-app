@@ -22,3 +22,29 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Sensitive environment and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+.envrc
+
+# Local credential/config files
+.npmrc
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+*.der
+
+# Cloud/local credential directories
+.aws/
+.azure/
+.gcp/
