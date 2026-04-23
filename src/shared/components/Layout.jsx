@@ -11,9 +11,6 @@ export default function Layout({ children }) {
       <Navbar />
       <Container as="section" fluid="lg" className="py-4 py-lg-5">
         <Row className="g-4 align-items-start">
-          <Col xs={12} lg={4} xl={3}>
-            <Sidebar />
-          </Col>
           <Col xs={12} lg={8} xl={9}>
             <main className="content-panel">{children}</main>
           </Col>

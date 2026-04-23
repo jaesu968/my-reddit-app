@@ -92,3 +92,9 @@
     padding: 1.25rem;
   }
 }
+
+/* styling for navbar*/
+.brand-reddit {
+  color: #98B539;
+  line-height: 1; 
+}
