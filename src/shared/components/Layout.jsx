@@ -1,14 +1,24 @@
+import Col from 'react-bootstrap/Col'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
+import '../styles/layout.css'
 
 export default function Layout({ children }) {
-	return (
-		<div>
-			<Navbar />
-			<div>
-				<Sidebar />
-				<main>{children}</main>
-			</div>
-		</div>
-	)
+  return (
+    <div className="app-shell">
+      <Navbar />
+      <Container as="section" fluid="lg" className="py-4 py-lg-5">
+        <Row className="g-4 align-items-start">
+          <Col xs={12} lg={4} xl={3}>
+            <Sidebar />
+          </Col>
+          <Col xs={12} lg={8} xl={9}>
+            <main className="content-panel">{children}</main>
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  )
 }

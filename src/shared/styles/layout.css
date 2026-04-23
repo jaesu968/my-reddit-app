@@ -1,0 +1,94 @@
+.app-shell {
+  min-height: 100%;
+  background: linear-gradient(180deg, rgba(248, 249, 250, 0.95) 0%, rgba(255, 255, 255, 1) 40%);
+}
+
+.page-section {
+  min-height: 100%;
+}
+
+.section-intro {
+  max-width: 42rem;
+}
+
+.page-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6c757d;
+}
+
+.page-eyebrow::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.section-lead {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #6c757d;
+}
+
+.content-panel {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bg) 92%, white);
+  box-shadow: var(--shadow);
+  text-align: left;
+  min-height: 100%;
+}
+
+.sidebar-card {
+  position: sticky;
+  top: 5.5rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  text-align: left;
+  background: color-mix(in srgb, var(--bg) 96%, white);
+}
+
+.sidebar-card .list-group-item {
+  background: transparent;
+  border-color: var(--border);
+}
+
+.feed-card,
+.detail-card,
+.empty-state-card {
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bg) 96%, white);
+}
+
+.feed-card .card-body,
+.detail-card .card-body {
+  padding: 1.5rem;
+}
+
+.empty-state-card {
+  max-width: 40rem;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar-card {
+    position: static;
+    top: auto;
+  }
+
+  .content-panel {
+    padding: 1.25rem;
+  }
+
+  .feed-card .card-body,
+  .detail-card .card-body {
+    padding: 1.25rem;
+  }
+}
