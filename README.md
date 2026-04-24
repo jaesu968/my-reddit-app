@@ -1,28 +1,50 @@
-# React + Vite
+# Reddit Mini
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and Bootstrap.  
+The current version focuses on a clean UI shell, route-based navigation, and consistent component styling while data/API integration is prepared.
 
-Currently, two official plugins are available:
+## Wireframes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Desktop
+![Desktop Wireframe](wireframes/RedditClientWireframesDesktop.jpg)
 
-## React Compiler
+### Mobile
+![Mobile Wireframe](wireframes/RedditClientWireframes.jpg)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Technologies Used
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-## Wireframes 
-Desktop Version: 
-/wireframes/RedditClientDesktop.jpg 
-Mobile Version: 
-/wireframes/RedditClientWireframes.jpg
-
-## Technologies used
+- React 19
+- Vite 8
+- Redux Toolkit
+- React Redux
+- React Router
+- Bootstrap 5
+- React Bootstrap
+- ESLint 9
 
 ## Features
 
-## Future work 
+- Route-based pages for:
+  - Home
+  - Posts
+  - Explore
+  - Not Found
+- Right-side sidebar with subreddit-focused cards
+- Posts-first Home page
+- Responsive Bootstrap grid/card layout
+- Consistent app color theme matched to branding/logo color (`#98B539`)
+- Redirect support from `/subreddits` to `/explore`
+- Reusable feature-first project structure (`features/`, `shared/`, `app/`)
+
+## Project Structure
+
+- `src/app` - Redux store and root reducer
+- `src/features` - feature-specific slices/components/pages/api stubs
+- `src/shared` - shared UI components, API stubs, hooks, styles, and utilities
+- `src/pages` - route-level pages
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
