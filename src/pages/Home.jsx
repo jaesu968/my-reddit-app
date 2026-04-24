@@ -12,12 +12,6 @@ const homeSections = [
 		to: '/posts',
 		cta: 'Browse posts',
 	},
-	{
-		title: 'Subreddits',
-		description: 'Jump into curated communities and see which ones are trending.',
-		to: '/subreddits',
-		cta: 'Browse subreddits',
-	},
 ]
 
 export default function Home() {
@@ -27,11 +21,11 @@ export default function Home() {
 				<p className="page-eyebrow">Overview</p>
 				<h1 className="display-5 mb-3">Welcome to Reddit Mini</h1>
 				<p className="section-lead mb-0">
-					Explore posts and communities from a single, consistent interface.
+					Use Home as your posts entry point while subreddit discovery stays in the right sidebar.
 				</p>
 			</section>
 
-			<Row xs={1} md={2} className="g-4">
+			<Row xs={1} className="g-4">
 				{homeSections.map((section) => (
 					<Col key={section.to}>
 						<Card className="h-100 shadow-sm border-0">

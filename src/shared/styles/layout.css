@@ -50,10 +50,7 @@
 .sidebar-card {
   position: sticky;
   top: 5.5rem;
-  border-radius: 1rem;
-  box-shadow: var(--shadow);
   text-align: left;
-  background: color-mix(in srgb, var(--bg) 96%, white);
 }
 
 .sidebar-card .list-group-item {
@@ -95,6 +92,6 @@
 
 /* styling for navbar*/
 .brand-reddit {
-  color: #98B539;
-  line-height: 1; 
+  color: var(--accent);
+  line-height: 1;
 }

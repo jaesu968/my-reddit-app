@@ -23,9 +23,6 @@ export default function AppNavbar() {
             <Nav.Link as={NavLink} to="/posts">
               Posts
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/subreddits">
-              Subreddits
-            </Nav.Link>
 			<Nav.Link as={NavLink} to="/explore">
               Explore
             </Nav.Link>

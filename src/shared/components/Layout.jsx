@@ -14,6 +14,9 @@ export default function Layout({ children }) {
           <Col xs={12} lg={8} xl={9}>
             <main className="content-panel">{children}</main>
           </Col>
+          <Col xs={12} lg={4} xl={3}>
+            <Sidebar />
+          </Col>
         </Row>
       </Container>
     </div>
