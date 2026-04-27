@@ -3,8 +3,10 @@ import Row from 'react-bootstrap/Row'
 import Stack from 'react-bootstrap/Stack'
 import PostDetail from '../components/PostDetail'
 import PostList from '../components/PostList'
+import CommentList from '../../comments/components/CommentList'
 
 export default function PostPage() {
+	// render page layout with PostList and PostDetail components, and conditionally render CommentList if a post is selected
 	return (
 		<Stack gap={4} className="page-section">
 			<section className="section-intro">
@@ -23,6 +25,11 @@ export default function PostPage() {
 					<PostDetail />
 				</Col>
 			</Row>
-		</Stack>
+			<Row className="mt-4">
+				<Col xs={12}>
+					<CommentList postId={selectedPost.id} />
+				</Col>
+			</Row>
+		</Stack>	
 	)
 }

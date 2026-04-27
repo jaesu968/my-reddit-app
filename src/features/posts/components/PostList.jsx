@@ -18,7 +18,7 @@ export default function PostList() {
 	const selectedPost = useSelector((state) => state.posts.selectedPost) // get selected post from the store
 	// render loading state if posts are loading 
 	if (status === 'loading') {
-		return <Loading message="Loading posts..." />
+		return <Loading label="Loading posts..." />
 	} else if (status === 'failed') { // render error state if there was an error fetching posts
 		return <ErrorState message={error} />
 	}
