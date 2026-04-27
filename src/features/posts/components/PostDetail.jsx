@@ -1,5 +1,7 @@
 import Card from 'react-bootstrap/Card'
 import { useSelector } from 'react-redux'
+import ReactMarkdown from 'react-markdown' // import ReactMarkdown to render markdown content in the post body
+import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavored Markdown features like tables, strikethrough, and task lists
 
 
 export default function PostDetail() {
@@ -32,9 +34,11 @@ export default function PostDetail() {
 				<Card.Text className="small text-body-secondary mb-2">
 					By {selectedPost.author} on {new Date(selectedPost.created_utc * 1000).toLocaleDateString()} | Score: {selectedPost.score}
 				</Card.Text>
-				<Card.Text className="text-body-secondary mb-0">
-					{selectedPost.selftext || 'No additional text content for this post.'}
-				</Card.Text>
+				<div className="text-body-secondary mb-0">
+					<ReactMarkdown remarkPlugins={[remarkGfm]}>
+						{selectedPost.selftext || 'No additional text content for this post.'}
+					</ReactMarkdown>
+				</div>
 			</Card.Body>
 		</Card>
 	)
