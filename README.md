@@ -48,3 +48,7 @@ The current version focuses on a clean UI shell, route-based navigation, and con
 1. Install dependencies:
    ```bash
    npm install
+2. Run the project
+   npm run dev (in dev environment)
+   npm run build (build for production)
+   npm run preview (preview production build)
