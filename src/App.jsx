@@ -1,10 +1,12 @@
 // src/App.jsx
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import PostPage from './features/posts/pages/PostPage'
 import Explore from './pages/Explore'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Layout from './shared/components/Layout'
+import SubredditPage from './features/subreddits/pages/SubredditPage'
+
 
 export default function App() {
   return (
@@ -12,7 +14,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/posts" element={<PostPage />} />
-        <Route path="/subreddits" element={<Navigate to="/explore" replace />} />
+        <Route path="/subreddits" element={<SubredditPage/>} />
         <Route path="/explore" element={<Explore />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
