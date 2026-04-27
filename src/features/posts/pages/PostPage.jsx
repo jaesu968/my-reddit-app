@@ -4,8 +4,10 @@ import Stack from 'react-bootstrap/Stack'
 import PostDetail from '../components/PostDetail'
 import PostList from '../components/PostList'
 import CommentList from '../../comments/components/CommentList'
+import { useSelector } from 'react-redux'
 
 export default function PostPage() {
+	const selectedPost = useSelector((state) => state.posts.selectedPost)
 	// render page layout with PostList and PostDetail components, and conditionally render CommentList if a post is selected
 	return (
 		<Stack gap={4} className="page-section">
@@ -27,7 +29,7 @@ export default function PostPage() {
 			</Row>
 			<Row className="mt-4">
 				<Col xs={12}>
-					<CommentList postId={selectedPost.id} />
+					<CommentList postId={selectedPost?.id} />
 				</Col>
 			</Row>
 		</Stack>	
