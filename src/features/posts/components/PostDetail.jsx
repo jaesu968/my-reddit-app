@@ -5,10 +5,12 @@ import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavore
 
 
 export default function PostDetail() {
-	//  selectedPost lookup from the store using useSelector, based on the postId prop passed from the PostPage component. This allows us to display the details of the selected post.
+	//  selectedPost lookup from the store using useSelector. This allows us to display the details of the selected post.
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
+	// add post ups and downs
+	const ups = selectedPost?.ups ?? 0 
+	const downs = selectedPost?.downs ?? 0
 	// if no post is selected, render a placeholder message prompting the user to select a post from the list.
-
 	if (!selectedPost){
 	return (
 		<Card className="border-0 shadow-sm detail-card h-100">
@@ -32,7 +34,7 @@ export default function PostDetail() {
 				</Card.Title>
 				{/* Render author, date, score, and post text here */}
 				<Card.Text className="small text-body-secondary mb-2">
-					By {selectedPost.author} on {new Date(selectedPost.created_utc * 1000).toLocaleDateString()} | Score: {selectedPost.score}
+					By {selectedPost.author} on {new Date(selectedPost.created_utc * 1000).toLocaleDateString()} | Score: {selectedPost.score} | Upvotes: {ups} | Downvotes: {downs}
 				</Card.Text>
 				<div className="text-body-secondary mb-0">
 					<ReactMarkdown remarkPlugins={[remarkGfm]}>

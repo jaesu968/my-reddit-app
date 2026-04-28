@@ -1,16 +1,17 @@
 // client side interaction with Reddit API (endpoints, query params, error handling, etc.)
 import endpoints from './endpoints'
 
-// All requests go to reddit.com — this is prepended to every path from endpoints.js
-const BASE_URL = 'https://www.reddit.com'
+// Use the local Vite proxy in development to avoid browser CORS blocks.
+// The proxy forwards /api/* requests to https://www.reddit.com/*.
+const BASE_URL = '/api'
 
 // buildUrl takes a path like '/r/popular.json' and an optional params object like { q: 'cats', sort: 'new' }
 // It returns a full URL string like 'https://www.reddit.com/r/popular.json?q=cats&sort=new'
 // URLSearchParams handles encoding special characters (spaces, &, etc.) automatically
 const buildUrl = (path, params = {}) => {
-    const url = new URL(path, BASE_URL)
-    Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value))
-    return url.toString()
+    const query = new URLSearchParams(params).toString()
+    const fullPath = `${BASE_URL}${path}`
+    return query ? `${fullPath}?${query}` : fullPath
 }
 
 // Reddit's public JSON API allows ~10 requests per minute without authentication.

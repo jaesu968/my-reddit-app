@@ -4,6 +4,8 @@ import Card from 'react-bootstrap/Card'
 export default function PostCard({ post, onSelect, isSelected }) {
 	// extract score/author/date from the post obejct and display them in the card body
 	const score = post.score
+	const ups = post.ups ?? 0 
+	const downs = post.downs ?? 0
 	const author = post.author
 	const date = new Date(post.created_utc * 1000).toLocaleDateString() // convert UTC timestamp to local date string
 
@@ -20,7 +22,7 @@ export default function PostCard({ post, onSelect, isSelected }) {
 					<span className="badge rounded-pill text-bg-light">Hot</span>
 				</div>
 				<Card.Text className="small text-body-secondary mb-0">
-					By {author} on {date} | Score: {score}
+					By {author} on {date} | Score: {score} | Upvotes: {ups} | Downvotes: {downs}
 				</Card.Text>
 			</Card.Body>
 		</Card>
