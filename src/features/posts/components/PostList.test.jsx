@@ -24,7 +24,7 @@ const SAMPLE_POSTS = [
     { id: '1', title: 'React Tips', selftext: '', author: 'alice', subreddit_name_prefixed: 'r/reactjs', created_utc: 0, score: 10, ups: 10, downs: 0 },
     { id: '2', title: 'Vue patterns', selftext: '', author: 'bob', subreddit_name_prefixed: 'r/vuejs', created_utc: 0, score: 5, ups: 5, downs: 0 },
 ]
-
+// testing suite for the PostList component
 describe('PostList', () => {
     // mock dispatch function to be used in tests
     const mockDispatch = vi.fn() 
