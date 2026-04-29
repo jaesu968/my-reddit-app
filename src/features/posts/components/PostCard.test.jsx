@@ -11,6 +11,7 @@ const SAMPLE_POST = {
     selftext: 'Some useful tips for React development.',
     author: 'kyle',
     score: 42,
+    num_comments: 15,
     subreddit_name_prefixed: 'r/reactjs',
     created_utc: 0
 }
@@ -40,15 +41,16 @@ describe('PostCard', () => {
         renderPostCard()
         // Assert that the title and author are rendered
         expect(screen.getByText(/react tips and tricks/i)).toBeInTheDocument()
-        expect(screen.getByText(/by kyle/i)).toBeInTheDocument()
+        expect(screen.getByText(/u\/kyle/i)).toBeInTheDocument()
     })
 
     // Rendering test: displays stable post metadata correctly.
     it('displays post metadata correctly', () => {
         renderPostCard()
 
-        expect(screen.getByText(/by kyle/i)).toBeInTheDocument()
-        expect(screen.getByText(/score: 42/i)).toBeInTheDocument()
+        expect(screen.getByText(/u\/kyle/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/vote score/i)).toHaveTextContent('42')
+        expect(screen.getByText(/15 comments/i)).toBeInTheDocument()
     })
 
     // Interaction test: clicking the card calls the onSelect callback.
