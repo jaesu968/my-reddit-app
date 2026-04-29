@@ -6,10 +6,10 @@ The current version focuses on a clean UI shell, route-based navigation, and con
 ## Wireframes
 
 ### Desktop
-![Desktop Wireframe](wireframes/RedditClientWireframesDesktop.jpg)
+![Desktop Wireframe](wireframes/RedditClientWireframesDesktopUpdated.jpg)
 
 ### Mobile
-![Mobile Wireframe](wireframes/RedditClientWireframes.jpg)
+![Mobile Wireframe](wireframes/RedditClientWireframesUpdated.jpg)
 
 ## Technologies Used
 
