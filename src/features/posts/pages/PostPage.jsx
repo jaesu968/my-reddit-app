@@ -15,9 +15,6 @@ export default function PostPage({ query = '', onQueryChange = () => {} }) {
 			<section className="section-intro">
 				<p className="page-eyebrow">Posts</p>
 				<h1 className="display-6 mb-3">Trending Discussions</h1>
-				<p className="section-lead mb-0">
-					A consistent feed layout for browsing featured conversations and post details.
-				</p>
 			</section>
 
 			<Row className="g-4">

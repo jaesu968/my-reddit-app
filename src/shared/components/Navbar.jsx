@@ -1,5 +1,4 @@
 import Container from 'react-bootstrap/Container'
-import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { NavLink } from 'react-router-dom'
 import RedditLogo from '../../assets/Logo3.png'
@@ -26,20 +25,6 @@ export default function AppNavbar({ query = '', onQueryChange = () => {} }) {
             showButton={false}
           />
         </div>
-        <Navbar.Toggle aria-controls="primary-navbar-nav" />
-        <Navbar.Collapse id="primary-navbar-nav">
-          <Nav className="ms-auto gap-lg-2">
-            <Nav.Link as={NavLink} to="/" end>
-              Home
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/posts">
-              Posts
-            </Nav.Link>
-			<Nav.Link as={NavLink} to="/explore">
-              Explore
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
       </Container>
     </Navbar>
   )
