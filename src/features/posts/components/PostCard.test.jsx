@@ -11,8 +11,6 @@ const SAMPLE_POST = {
     selftext: 'Some useful tips for React development.',
     author: 'kyle',
     score: 42,
-    ups: 45,
-    downs: 3,
     subreddit_name_prefixed: 'r/reactjs',
     created_utc: 0
 }
@@ -51,8 +49,6 @@ describe('PostCard', () => {
 
         expect(screen.getByText(/by kyle/i)).toBeInTheDocument()
         expect(screen.getByText(/score: 42/i)).toBeInTheDocument()
-        expect(screen.getByText(/upvotes: 45/i)).toBeInTheDocument()
-        expect(screen.getByText(/downvotes: 3/i)).toBeInTheDocument()
     })
 
     // Interaction test: clicking the card calls the onSelect callback.

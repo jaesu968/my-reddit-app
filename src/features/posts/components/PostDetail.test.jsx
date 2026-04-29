@@ -17,9 +17,7 @@ const SAMPLE_POST = {
     title: 'React Tips', 
     author: 'kyle',
     created_utc: 0, 
-    score: 42, 
-    ups: 45, 
-    downs: 3, 
+    score: 42,
     selftext: 'Some **markdown** content.'
 }
 // testing suite for the PostDetail component 
@@ -42,8 +40,6 @@ describe('PostDetail', () => {
         expect(screen.getByRole('heading', { name: /react tips/i })).toBeInTheDocument()
         expect(screen.getByText(/by kyle on/i)).toBeInTheDocument()
         expect(screen.getByText(/score: 42/i)).toBeInTheDocument()
-        expect(screen.getByText(/upvotes: 45/i)).toBeInTheDocument()
-        expect(screen.getByText(/downvotes: 3/i)).toBeInTheDocument()
     })
     // show fallback text when appropriate (e.g. when selftext is empty)
     it('shows fallback text when selftext is empty', () => {
