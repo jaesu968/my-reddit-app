@@ -37,29 +37,18 @@ describe('PostList', () => {
         )
     })
 
-    // Smoke test: confirms the search input renders and posts are shown after a successful fetch.
+    // Smoke test: confirms posts render without crashing after a successful fetch.
     it('renders without crashing', () => {
-        usePosts.mockReturnValue({ items: [], status: 'succeeded', error: null })
-        render(<PostList />)
-        // "Search posts" is the aria-label on the input, not a visible text node — use getByRole
-        expect(screen.getByRole('textbox', { name: /search posts/i })).toBeInTheDocument()
-    })
-
-    // Interaction test: typing in the search bar should filter the list of posts.
-    it('filters posts based on search query', async () => {
-        const user = userEvent.setup()
-        // Mock must be set BEFORE the first render so the component gets the data on mount
         usePosts.mockReturnValue({ items: SAMPLE_POSTS, status: 'succeeded', error: null })
         render(<PostList />)
-
-        // Both posts should be visible initially
         expect(screen.getByText(/react tips/i)).toBeInTheDocument()
-        expect(screen.getByText(/vue patterns/i)).toBeInTheDocument()
+    })
 
-        // Type into the search bar to filter
-        await user.type(screen.getByRole('textbox', { name: /search posts/i }), 'react')
+    // Rendering test: external query prop should filter the list of posts.
+    it('filters posts based on search query', () => {
+        usePosts.mockReturnValue({ items: SAMPLE_POSTS, status: 'succeeded', error: null })
+        render(<PostList query="react" />)
 
-        // Only the matching post should remain
         expect(screen.getByText(/react tips/i)).toBeInTheDocument()
         expect(screen.queryByText(/vue patterns/i)).not.toBeInTheDocument()
     })
@@ -79,12 +68,10 @@ describe('PostList', () => {
     })
 
     // Conditional rendering test: shows "no results" message when query has no matches.
-    it('shows no-results message when search query matches nothing', async () => {
-        const user = userEvent.setup() // userEvent setup for simulating user interactions
+    it('shows no-results message when search query matches nothing', () => {
         usePosts.mockReturnValue({ items: SAMPLE_POSTS, status: 'succeeded', error: null })
-        render(<PostList />)
+        render(<PostList query="xyznotapost" />)
 
-        await user.type(screen.getByRole('textbox', { name: /search posts/i }), 'xyznotapost')
         expect(screen.getByText(/no posts found/i)).toBeInTheDocument()
     })
 

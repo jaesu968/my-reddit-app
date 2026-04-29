@@ -6,8 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setSelectedPost } from '../postSlice'
 import Loading from '../../../shared/components/Loading'
 import ErrorState from '../../../shared/components/ErrorState'
-import SearchBar from '../../../shared/components/SearchBar'
-import { useState } from 'react'
 
 // Returns true when a post matches the normalized search term.
 const matchesPost = (post, searchTerm) => {
@@ -19,25 +17,13 @@ const matchesPost = (post, searchTerm) => {
 	)
 }
 
-export default function PostList() {
+export default function PostList({ query = '' }) {
 	// Pull post data/status from Redux through the feature hook.
 	const { items, status, error } = usePosts()
 	// Dispatch updates selected post when a card is clicked.
 	const dispatch = useDispatch()
 	// Used to apply selected styling to the active card.
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
-	// Local search text for client-side filtering.
-	const [query, setQuery] = useState('')
-
-	// Keep form submit from triggering a page refresh.
-	const handleSearchSubmit = (e) => {
-		e.preventDefault()
-	}
-
-	// Reset the search input to show all posts again.
-	const handleClearSearch = () => {
-		setQuery('')
-	}
 
 	// Save clicked post as the current selection in Redux.
 	const handleSelectPost = (post) => {
@@ -71,23 +57,12 @@ export default function PostList() {
 	const hasNoResults = normalizedQuery.length > 0 && filteredPosts.length === 0
 
 	return (
-		<>
-			<SearchBar
-				value={query}
-				onChange={setQuery}
-				onSubmit={handleSearchSubmit}
-				onClear={handleClearSearch}
-				placeholder="Search posts..."
-				ariaLabel="Search posts"
-				isLoading={status === 'loading'}
-			/>
-			{hasNoResults ? (
-				<p className="text-muted mt-3">No posts found matching your search query.</p>
-			) : (
-				<Row xs={1} className="g-4">
-					{postItems}
-				</Row>
-			)}
-		</>
+		hasNoResults ? (
+			<p className="text-muted mt-3">No posts found matching your search query.</p>
+		) : (
+			<Row xs={1} className="g-4">
+				{postItems}
+			</Row>
+		)
 	)
 }

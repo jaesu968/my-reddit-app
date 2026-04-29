@@ -6,8 +6,9 @@ import PostList from '../components/PostList'
 import CommentList from '../../comments/components/CommentList'
 import { useSelector } from 'react-redux'
 
-export default function PostPage() {
+export default function PostPage({ query = '', onQueryChange = () => {} }) {
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
+
 	// render page layout with PostList and PostDetail components, and conditionally render CommentList if a post is selected
 	return (
 		<Stack gap={4} className="page-section">
@@ -21,7 +22,7 @@ export default function PostPage() {
 
 			<Row className="g-4">
 				<Col xs={12} xl={7}>
-					<PostList />
+					<PostList query={query} />
 				</Col>
 				<Col xs={12} xl={5}>
 					<PostDetail />
