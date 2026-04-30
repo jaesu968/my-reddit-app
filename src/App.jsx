@@ -4,15 +4,16 @@ import PostPage from './features/posts/pages/PostPage'
 import NotFound from './pages/NotFound'
 import Layout from './shared/components/Layout'
 import SubredditPage from './features/subreddits/pages/SubredditPage'
+import { useState } from 'react'
 
 
 export default function App() {
+  const [query, setQuery] = useState('')
   return (
-    <Layout>
+    <Layout query={query} onQueryChange={setQuery}>
       <Routes>
-        <Route path="/" element={<PostPage />} />
-        <Route path="/posts" element={<PostPage {...{ query: '', onQueryChange: () => {} }}/>} />
-        <Route path="/subreddits" element={<SubredditPage {...{ query: '', onQueryChange: () => {} }}/>} />
+        <Route path="/" element={<PostPage query={query}/>} />
+        <Route path="/subreddits" element={<SubredditPage query={query}/>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
