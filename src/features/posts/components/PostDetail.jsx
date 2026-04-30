@@ -3,15 +3,27 @@ import { useSelector } from 'react-redux'
 import ReactMarkdown from 'react-markdown' // import ReactMarkdown to render markdown content in the post body
 import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavored Markdown features like tables, strikethrough, and task lists
 import CommentList from '../../comments/components/CommentList' // import CommentList to display comments for the selected post
+import {useEffect, useRef } from 'react' // import useEffect and useRef to manage scroll behavior when a new post is selected
 
 
 export default function PostDetail() {
 	//  selectedPost lookup from the store using useSelector. This allows us to display the details of the selected post.
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
+	// create a ref for the outer card container to manage scroll behavior when a new post is selected
+	const cardRef = useRef(null)
+	// when selectedPost id changes use useEffect to scroll the card into view smoothly, so that when a user clicks on a post from the list, the details card will scroll into view if it's not already visible.
+	useEffect(() => {
+		if(selectedPost && cardRef.current) {
+			// only on small screen devices, scroll the card into view when a new post is selected, to ensure the user sees the post details without having to manually scroll.
+			if (window.innerWidth < 992) {
+				cardRef.current.scrollIntoView({ behavior: 'smooth' })
+			}
+		}
+	}, [selectedPost])
 	// if no post is selected, render a placeholder message prompting the user to select a post from the list.
 	if (!selectedPost){
 	return (
-		<Card className="border-0 shadow-sm detail-card h-100">
+		<Card className="border-0 shadow-sm detail-card h-100" ref={cardRef}>
 			<Card.Body>
 				<p className="text-uppercase small fw-semibold text-muted mb-2">Post Detail</p>
 				<Card.Title as="h2" className="h4 mb-3">

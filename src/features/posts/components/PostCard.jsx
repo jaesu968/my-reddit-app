@@ -1,6 +1,11 @@
 // PostCard component that displays individual post information in a card layout
 import { useState } from 'react'
 import Card from 'react-bootstrap/Card'
+import ReactMarkdown from 'react-markdown' // import ReactMarkdown to render markdown content in the post body
+import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavored Markdown features like tables, strikethrough, and task lists in posts
+import CommentList from '../../comments/components/CommentList' // import CommentList to display comments for the selected post
+import rehypeRaw from 'rehype-raw'
+import { useRef, useEffect } from 'react' // import useEffect and useRef to manage scroll behavior when a new post is selected
 
 export default function PostCard({ post, onSelect, isSelected }) {
 	const [voteDir, setVoteDir] = useState(0) // 1 = upvoted, -1 = downvoted, 0 = neutral
@@ -25,6 +30,23 @@ export default function PostCard({ post, onSelect, isSelected }) {
 		e.stopPropagation()
 		setVoteDir(v => v === -1 ? 0 : -1)
 	}
+	// boolean to check for screen size to conditionally render post details on large screens , versus expanding the card on small screens when selected.
+	const isMobile = window.innerWidth < 992
+	// useRef to create a reference to the card element for managing scroll behavior when a post is selected on mobile devices
+	const expandedRef = useRef(null)
+	// useEffect to scroll to the expanded post details when a new post is selected on mobile devices,
+	//  ensuring the user sees the post content without having to manually scroll.
+	// check if isSelected or isMobile changes
+	useEffect(() => {
+		if(isSelected && isMobile) {
+			// if true call expandedRef.current?.scrollIntoView 
+			// add delay of 500ms to allow the card expansion animation to complete before scrolling, ensuring a smoother user experience.
+			setTimeout(() => {
+				expandedRef.current?.scrollIntoView({ behavior: 'smooth' })
+			}, 500)
+		}
+	}, [isSelected, isMobile])
+
 
 	return (
 		<Card
@@ -55,18 +77,30 @@ export default function PostCard({ post, onSelect, isSelected }) {
 					>▼</button>
 				</div>
 				{/* Content column */}
-				<div className="flex-grow-1 d-flex flex-column min-width: 0">
-					<Card.Title as="h3" className="h5 mb-2">{post.title}</Card.Title>
-					{image && (
-						<img
-							src={image}
-							alt={post.title}
-							className="img-fluid rounded mb-2"
-							style={{ maxHeight: '200px', objectFit: 'cover' }}
-						/>
-					)}
-					{!image && post.selftext && (
-						<p className="small text-body-secondary mb-2 text-truncate">{post.selftext}</p>
+				<div className="flex-grow-1 d-flex flex-column">
+					<Card.Title as="h3" className="h5 mb-2" style={{minWidth: 0}}>{post.title}</Card.Title>
+					
+					{isSelected && isMobile ? (
+						<div ref={expandedRef} className="mb-3">
+							<ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+								{post.selftext || 'No content for this post.'}
+							</ReactMarkdown>
+							<CommentList postId={post.id} />
+						</div>
+					) : (
+						<>
+							{image && (
+								<img 
+									src={image}
+									alt={post.title}
+									className="img-fluid rounded mb-2"
+									style={{ maxHeight: '200px', objectFit: 'cover'}}
+								/>
+							)}
+							{!image && post.selftext && (
+								<p className="small text-body-secondary mb-2 text-truncate">{post.selftext}</p>
+							)}
+						</>
 					)}
 					<p className="small text-muted mb-0 mt-auto">
 						Posted by u/{author} · {date} · {numComments} comments

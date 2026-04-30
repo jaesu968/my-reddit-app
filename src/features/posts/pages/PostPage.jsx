@@ -5,8 +5,11 @@ import PostDetail from '../components/PostDetail'
 import PostList from '../components/PostList'
 import { useSelector } from 'react-redux'
 
+
 export default function PostPage({ query = '', onQueryChange = () => {} }) {
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
+	// boolean to check for large screen size
+	const isLargeScreen = window.innerWidth >= 992 // use this to conditionally render the PostDetail component on large screens, and manage scroll behavior on small screens when a new post is selected.
 
 	// render page layout with PostList and PostDetail components, and conditionally render CommentList if a post is selected
 	return (
@@ -17,11 +20,11 @@ export default function PostPage({ query = '', onQueryChange = () => {} }) {
 			</section>
 
 			<Row className="g-4">
-				<Col xs={12} xl={7}>
+				<Col xs={12} xl={7} className="order-2 order-xl-1">
 					<PostList query={query} />
 				</Col>
-				{selectedPost && (
-					<Col xs={12} xl={5}>
+				{selectedPost && isLargeScreen &&  (
+					<Col xl={5} className="order-1 order-xl-2">
 						<PostDetail />
 					</Col>
 				)}
