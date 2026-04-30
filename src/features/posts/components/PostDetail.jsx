@@ -47,9 +47,20 @@ export default function PostDetail() {
 					By {selectedPost.author} on {new Date(selectedPost.created_utc * 1000).toLocaleDateString()} | Score: {selectedPost.score}
 				</Card.Text>
 				<div className="text-body-secondary mb-0">
-					<ReactMarkdown remarkPlugins={[remarkGfm]}>
-						{selectedPost.selftext || 'No additional text content for this post.'}
-					</ReactMarkdown>
+					{selectedPost.selftext ? (
+						<ReactMarkdown remarkPlugins={[remarkGfm]}>
+							{selectedPost.selftext}
+						</ReactMarkdown>
+					) : (
+						<p className="small mb-2">
+							This is a link post.{' '}
+							{selectedPost.url && (
+								<a href={selectedPost.url} target="_blank" rel="noopener noreferrer">
+									View original link ↗
+								</a>
+							)}
+						</p>
+					)}
 				</div>
 				<CommentList postId={selectedPost.id} />
 			</Card.Body>

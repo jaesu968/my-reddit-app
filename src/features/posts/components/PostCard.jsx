@@ -82,9 +82,20 @@ export default function PostCard({ post, onSelect, isSelected }) {
 					
 					{isSelected && isMobile ? (
 						<div ref={expandedRef} className="mb-3">
-							<ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-								{post.selftext || 'No content for this post.'}
-							</ReactMarkdown>
+							{post.selftext ? (
+								<ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+									{post.selftext}
+								</ReactMarkdown>
+							) : (
+								<p className="text-body-secondary small mb-2">
+									This is a link post.{' '}
+									{post.url && (
+										<a href={post.url} target="_blank" rel="noopener noreferrer">
+											View original link ↗
+										</a>
+									)}
+								</p>
+							)}
 							<CommentList postId={post.id} />
 						</div>
 					) : (
