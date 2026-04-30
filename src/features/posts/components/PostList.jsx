@@ -1,7 +1,7 @@
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import PostCard from './PostCard'
-import { usePosts } from '../hooks'
+import { usePosts, usePostsBySubreddit } from '../hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSelectedPost } from '../postSlice'
 import Loading from '../../../shared/components/Loading'
@@ -18,8 +18,15 @@ const matchesPost = (post, searchTerm) => {
 }
 
 export default function PostList({ query = '' }) {
-	// Pull post data/status from Redux through the feature hook.
-	const { items, status, error } = usePosts()
+	const selectedSubreddit = useSelector((state) => state.subreddits.selectedSubreddit)
+	const selectedName = (selectedSubreddit?.display_name || '').trim().toLowerCase()
+	const selectedUrl = (selectedSubreddit?.url || '').trim()
+	// Reddit's "Home" entry is a special feed, not a real /r/<name> subreddit endpoint.
+	const isHomeFeed = selectedName === 'home' || selectedUrl === '/'
+	// Always call hooks in the same order, then select the active dataset.
+	const popularPosts = usePosts()
+	const subredditPosts = usePostsBySubreddit(selectedSubreddit?.display_name)
+	const { items, status, error } = selectedSubreddit && !isHomeFeed ? subredditPosts : popularPosts
 	// Dispatch updates selected post when a card is clicked.
 	const dispatch = useDispatch()
 	// Used to apply selected styling to the active card.

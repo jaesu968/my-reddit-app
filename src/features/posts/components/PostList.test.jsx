@@ -5,13 +5,14 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, vi } from 'vitest' // using vitest instead of jest, typically faster and more modern for Vite projects
 import PostList from './PostList'
-import { usePosts } from '../hooks'
+import { usePosts, usePostsBySubreddit } from '../hooks'
 import { useDispatch, useSelector } from 'react-redux'
 
 // create mock implementations for the hooks and Redux functions used in PostList 
 // hooks first to control the data returned to the component during tests,
 vi.mock('../hooks', () => ({
-    usePosts: vi.fn() 
+    usePosts: vi.fn(),
+    usePostsBySubreddit: vi.fn(),
 }))
 // mock useDispatch to prevent actual Redux actions from being dispatched during tests
 vi.mock('react-redux', () => ({
@@ -32,8 +33,9 @@ describe('PostList', () => {
     beforeEach(() => {
         vi.clearAllMocks() // reset mock function calls and implementations before each test
         useDispatch.mockReturnValue(mockDispatch) // use the mock dispatch function
+        usePostsBySubreddit.mockReturnValue({ items: [], status: 'idle', error: null })
         useSelector.mockImplementation((selectorFn) => 
-            selectorFn({ posts: { selectedPost: null } }) // default state for useSelector
+            selectorFn({ posts: { selectedPost: null }, subreddits: { selectedSubreddit: null } }) // default state for useSelector
         )
     })
 
@@ -87,5 +89,21 @@ describe('PostList', () => {
         expect(mockDispatch).toHaveBeenCalledWith(
             expect.objectContaining({ payload: expect.objectContaining({ id: '1' }) })
         )
+    })
+
+    // Regression test: selecting Reddit "Home" should use popular feed, not /r/home.
+    it('uses popular feed when selected subreddit is Home', () => {
+        usePosts.mockReturnValue({ items: SAMPLE_POSTS, status: 'succeeded', error: null })
+        usePostsBySubreddit.mockReturnValue({ items: [], status: 'failed', error: 'Subreddit not found' })
+        useSelector.mockImplementation((selectorFn) =>
+            selectorFn({
+                posts: { selectedPost: null },
+                subreddits: { selectedSubreddit: { display_name: 'Home', url: '/' } },
+            })
+        )
+
+        render(<PostList />)
+        expect(screen.getByText(/react tips/i)).toBeInTheDocument()
+        expect(screen.queryByText(/subreddit not found/i)).not.toBeInTheDocument()
     })
 })
