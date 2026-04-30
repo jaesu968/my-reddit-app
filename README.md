@@ -48,6 +48,37 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 - `src/shared` - shared UI components, API stubs, hooks, styles, and utilities
 - `src/pages` - route-level pages
 
+## Testing
+
+### Unit Tests (Vitest)
+
+Run component and slice unit tests:
+
+```bash
+npm test          # run all unit tests once
+npm run test:watch  # watch mode
+npm run test:ui     # Vitest browser UI
+```
+
+### E2E Tests (Playwright)
+
+Three end-to-end tests covering core user flows:
+
+- **Page load** — verifies post cards are visible on launch
+- **Search filtering** — confirms no-results state with an unmatched query
+- **Post selection** — clicks a post, asserts it becomes selected and detail content appears
+
+```bash
+npm run e2e           # run all E2E tests (headless, all browsers)
+npm run e2e:headed    # run with visible browser window
+npm run e2e:ui        # open Playwright interactive UI
+npm run e2e:debug     # step through tests with Playwright debugger
+```
+
+> Playwright must have browsers installed: `npx playwright install`
+
+---
+
 ## Getting Started
 
 1. Install dependencies:
