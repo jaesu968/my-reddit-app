@@ -7,21 +7,34 @@ export const handler = async (event) => {
     const originalPath = new URL(event.rawUrl).pathname
     const redditPath = originalPath.replace(/^\/api/, '') || '/'
     const queryString = event.rawQuery ? `?${event.rawQuery}` : ''
-    const url = `https://www.reddit.com${redditPath}${queryString}`
-    console.log('[reddit-proxy] originalPath:', originalPath, '→ fetching:', url)
+    const hosts = ['https://www.reddit.com', 'https://old.reddit.com', 'https://api.reddit.com']
 
     try {
-        const response = await fetch(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Cache-Control': 'no-cache',
-            },
-        })
+        let response
+        let resolvedUrl = ''
+
+        for (const host of hosts) {
+            const url = `${host}${redditPath}${queryString}`
+            console.log('[reddit-proxy] originalPath:', originalPath, '→ fetching:', url)
+            response = await fetch(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Cache-Control': 'no-cache',
+                },
+            })
+
+            // Retry on common edge-block statuses from Reddit.
+            if (response.status !== 403 && response.status !== 429) {
+                resolvedUrl = url
+                break
+            }
+        }
 
         const body = await response.text()
+        console.log('[reddit-proxy] status:', response.status, 'from:', resolvedUrl || 'fallback exhausted')
 
         return {
             statusCode: response.status,
