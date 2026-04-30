@@ -30,7 +30,7 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 
 ## Features
 
-- Live Reddit API integration via Vite proxy 
+- Live Reddit API integration via Vite proxy (local) and Netlify OAuth proxy function (production)
 - Browse top posts from Reddit's popular feed
 - Browse and select subreddits -- auto-loads posts for that community
 - View post details with full markdown body rendering 

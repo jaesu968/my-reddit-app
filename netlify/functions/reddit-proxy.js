@@ -1,10 +1,10 @@
 // Netlify serverless function that proxies requests to Reddit.
-// In production, app-only OAuth is the most reliable way to avoid 403 from cloud IP ranges.
+// For policy compliance and reliability, production traffic should use app-only OAuth.
 
 let cachedToken = null
 let cachedTokenExpiresAt = 0
 
-const DEFAULT_USER_AGENT = 'web:reddit-mini-app:v1.0.0 (by /u/reddit-mini-app)'
+const DEFAULT_USER_AGENT = ''
 
 const getOAuthToken = async (clientId, clientSecret, userAgent) => {
     const now = Date.now()
@@ -33,30 +33,6 @@ const getOAuthToken = async (clientId, clientSecret, userAgent) => {
     return cachedToken
 }
 
-const fetchWithPublicFallback = async (redditPath, queryString, userAgent) => {
-    const hosts = ['https://www.reddit.com', 'https://old.reddit.com', 'https://api.reddit.com']
-    let response = null
-    let resolvedUrl = ''
-
-    for (const host of hosts) {
-        const url = `${host}${redditPath}${queryString}`
-        console.log('[reddit-proxy] fallback fetch:', url)
-        response = await fetch(url, {
-            headers: {
-                'User-Agent': userAgent,
-                Accept: 'application/json, text/plain, */*',
-            },
-        })
-
-        if (response.status !== 403 && response.status !== 429) {
-            resolvedUrl = url
-            break
-        }
-    }
-
-    return { response, resolvedUrl: resolvedUrl || 'fallback exhausted' }
-}
-
 export const handler = async (event) => {
     const originalPath = new URL(event.rawUrl).pathname
     const redditPath = originalPath.replace(/^\/api/, '') || '/'
@@ -66,41 +42,49 @@ export const handler = async (event) => {
     const clientSecret = process.env.REDDIT_CLIENT_SECRET
     const userAgent = process.env.REDDIT_USER_AGENT || DEFAULT_USER_AGENT
 
+    if (!clientId || !clientSecret || !userAgent) {
+        return {
+            statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                error:
+                    'Missing Reddit API configuration. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_USER_AGENT in Netlify environment variables.',
+            }),
+        }
+    }
+
     try {
         let response
         let resolvedUrl
 
-        if (clientId && clientSecret) {
-            const token = await getOAuthToken(clientId, clientSecret, userAgent)
-            const oauthUrl = `https://oauth.reddit.com${redditPath}${queryString}`
-            console.log('[reddit-proxy] oauth fetch:', oauthUrl)
+        const token = await getOAuthToken(clientId, clientSecret, userAgent)
+        const oauthUrl = `https://oauth.reddit.com${redditPath}${queryString}`
+        console.log('[reddit-proxy] oauth fetch:', oauthUrl)
 
+        response = await fetch(oauthUrl, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'User-Agent': userAgent,
+                Accept: 'application/json, text/plain, */*',
+            },
+        })
+        resolvedUrl = oauthUrl
+
+        // If token expires or is rejected, refresh once and retry.
+        if (response.status === 401 || response.status === 403) {
+            cachedToken = null
+            cachedTokenExpiresAt = 0
+            const freshToken = await getOAuthToken(clientId, clientSecret, userAgent)
             response = await fetch(oauthUrl, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${freshToken}`,
                     'User-Agent': userAgent,
                     Accept: 'application/json, text/plain, */*',
                 },
             })
-            resolvedUrl = oauthUrl
-
-            // If token expires or is rejected, refresh once and retry.
-            if (response.status === 401 || response.status === 403) {
-                cachedToken = null
-                cachedTokenExpiresAt = 0
-                const freshToken = await getOAuthToken(clientId, clientSecret, userAgent)
-                response = await fetch(oauthUrl, {
-                    headers: {
-                        Authorization: `Bearer ${freshToken}`,
-                        'User-Agent': userAgent,
-                        Accept: 'application/json, text/plain, */*',
-                    },
-                })
-            }
-        } else {
-            const fallback = await fetchWithPublicFallback(redditPath, queryString, userAgent)
-            response = fallback.response
-            resolvedUrl = fallback.resolvedUrl
         }
 
         const body = await response.text()
