@@ -63,11 +63,22 @@
 .empty-state-card {
   border-radius: 1rem;
   background: color-mix(in srgb, var(--bg) 96%, white);
+  transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .feed-card .card-body,
 .detail-card .card-body {
   padding: 1.5rem;
+}
+
+.feed-card:hover {
+  transform: translateY(-4px); 
+  box-shadow: 0 6px 18px rgba(152, 181, 57, 0.18);  
+}
+.feed-card:focus-visible P{
+  outline: 2px solid var(--accent); 
+  outline-offset: 2px; 
+  box-shadow: 0 0 0 4px rgba(152, 181, 57, 0.2);
 }
 
 .empty-state-card {
