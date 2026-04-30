@@ -71,6 +71,10 @@
   padding: 1.5rem;
 }
 
+.feed-card {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
 .feed-card:hover {
   transform: translateY(-4px); 
   box-shadow: 0 6px 18px rgba(152, 181, 57, 0.18);  
