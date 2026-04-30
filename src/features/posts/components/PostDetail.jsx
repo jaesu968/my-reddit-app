@@ -2,6 +2,7 @@ import Card from 'react-bootstrap/Card'
 import { useSelector } from 'react-redux'
 import ReactMarkdown from 'react-markdown' // import ReactMarkdown to render markdown content in the post body
 import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavored Markdown features like tables, strikethrough, and task lists
+import CommentList from '../../comments/components/CommentList' // import CommentList to display comments for the selected post
 
 
 export default function PostDetail() {
@@ -38,6 +39,7 @@ export default function PostDetail() {
 						{selectedPost.selftext || 'No additional text content for this post.'}
 					</ReactMarkdown>
 				</div>
+				<CommentList postId={selectedPost.id} />
 			</Card.Body>
 		</Card>
 	)

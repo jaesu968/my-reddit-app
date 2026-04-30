@@ -3,7 +3,6 @@ import Row from 'react-bootstrap/Row'
 import Stack from 'react-bootstrap/Stack'
 import PostDetail from '../components/PostDetail'
 import PostList from '../components/PostList'
-import CommentList from '../../comments/components/CommentList'
 import { useSelector } from 'react-redux'
 
 export default function PostPage({ query = '', onQueryChange = () => {} }) {
@@ -21,14 +20,11 @@ export default function PostPage({ query = '', onQueryChange = () => {} }) {
 				<Col xs={12} xl={7}>
 					<PostList query={query} />
 				</Col>
-				<Col xs={12} xl={5}>
-					<PostDetail />
-				</Col>
-			</Row>
-			<Row className="mt-4">
-				<Col xs={12}>
-					<CommentList postId={selectedPost?.id} />
-				</Col>
+				{selectedPost && (
+					<Col xs={12} xl={5}>
+						<PostDetail />
+					</Col>
+				)}
 			</Row>
 		</Stack>	
 	)

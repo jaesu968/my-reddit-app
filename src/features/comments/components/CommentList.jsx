@@ -4,6 +4,7 @@ import Loading from '../../../shared/components/Loading'
 import ErrorState from '../../../shared/components/ErrorState'
 import ReactMarkdown from 'react-markdown' // import ReactMarkdown to render markdown content in the comment body
 import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavored Markdown features like tables, strikethrough, and task lists in comments
+import rehypeRaw from 'rehype-raw' // import rehypeRaw to allow raw HTML (e.g. images) in comment bodies
 
 export default function CommentList({ postId }) {
 	// hook call to get comments data and status
@@ -13,13 +14,17 @@ export default function CommentList({ postId }) {
 	if (status === 'loading') return <Loading label="Loading comments..." />
 	if (status === 'failed') return <ErrorState message={error} />
 	// render comments in a list format using Boostrap Card components
-	const commentItems = items.map((comment) => (
+	// slice the first 10 comments to keep the UI manageable, and then map over them to create a card for each comment
+	const commentItems = items.slice(0, 10).map((comment) => (
 		<Card key={comment.id} className="mb-3">
 			<Card.Body>
 				<Card.Title className="small text-muted">{comment.author}</Card.Title>
 				<div>
-					<ReactMarkdown remarkPlugins={[remarkGfm]}>
-						{comment.body || 'No content for this comment.'}
+					<ReactMarkdown 
+					remarkPlugins={[remarkGfm]}
+					rehypePlugins={[rehypeRaw]}
+					components={{ img: (props) => <img {...props} style={{ maxWidth: '100%'}} /> }}>
+						{comment.body}
 					</ReactMarkdown>
 				</div>
 			</Card.Body>
