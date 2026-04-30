@@ -11,6 +11,10 @@ import PostDetail from './PostDetail'
 vi.mock('react-redux', () => ({
     useSelector: vi.fn() 
 }))
+// mock CommentList to avoid Redux dependency chain bleeding into PostDetail tests
+vi.mock('../../comments/components/CommentList', () => ({
+    default: () => <div data-testid="comment-list" />
+}))
 // sample post data to be used in tests
 const SAMPLE_POST = {
     id: '1', 

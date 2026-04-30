@@ -36,12 +36,13 @@ describe('SubredditList', () => {
         )
     })
 
-    // Smoke test: confirms the search input renders after a successful fetch.
+    // Smoke test: confirms the component renders without crashing on a successful fetch.
     it('renders without crashing', () => {
-        useSubreddits.mockReturnValue({ items: [], status: 'succeeded', error: null })
-        render(<SubredditList />)
-        // "Search subreddits" is the aria-label on the input — use getByRole, not getByText
-        expect(screen.getByRole('textbox', { name: /search subreddits/i })).toBeInTheDocument()
+        useSubreddits.mockReturnValue({ items: SAMPLE_SUBREDDITS, status: 'succeeded', error: null })
+        render(<SubredditList query="" />)
+        // Both subreddit titles should appear when no query is applied
+        expect(screen.getByText(/reactjs/i)).toBeInTheDocument()
+        expect(screen.getByText(/vuejs/i)).toBeInTheDocument()
     })
 
     // Conditional rendering test: shows loading state when subreddits are being fetched.
@@ -57,33 +58,22 @@ describe('SubredditList', () => {
         render(<SubredditList />)
         expect(screen.getByText(/network error/i)).toBeInTheDocument()
     })
-    // Interaction test: typing in the search bar should filter the list of subreddits.
-    it('filters subreddits based on search query', async () => {
-        const user = userEvent.setup() // userEvent setup for simulating user interactions
-        // Mock must be set BEFORE the first render so the component gets the data on mount
+    // Filtering test: query prop should filter the list of subreddits.
+    it('filters subreddits based on search query', () => {
         useSubreddits.mockReturnValue({ items: SAMPLE_SUBREDDITS, status: 'succeeded', error: null })
-        render(<SubredditList />)
+        // SubredditList now receives query as a prop from the global search bar
+        render(<SubredditList query="react" />)
 
-        // Both subreddits should be visible initially
-        expect(screen.getByText(/reactjs/i)).toBeInTheDocument()
-        expect(screen.getByText(/vuejs/i)).toBeInTheDocument()
-
-        // Type into the search bar to filter
-        await user.type(screen.getByRole('textbox', { name: /search subreddits/i }), 'react')
-
-        // Only the matching subreddit should remain
+        // Only the matching subreddit should be visible
         expect(screen.getByText(/reactjs/i)).toBeInTheDocument()
         expect(screen.queryByText(/vuejs/i)).not.toBeInTheDocument()
     })
 
-    // Conditional rendering test: shows "no results" message when query has no matches.
-    it('shows no-results message when search query matches nothing', async () => {
-        const user = userEvent.setup() // userEvent setup for simulating user interactions
+    // Conditional rendering test: shows "no results" message when query prop has no matches.
+    it('shows no-results message when search query matches nothing', () => {
         useSubreddits.mockReturnValue({ items: SAMPLE_SUBREDDITS, status: 'succeeded', error: null })
-        render(<SubredditList />)
-
-        // Type a query that matches nothing
-        await user.type(screen.getByRole('textbox', { name: /search subreddits/i }), 'angular')
+        // Pass a query that matches nothing
+        render(<SubredditList query="angular" />)
 
         // Expect a no-results message to be shown
         expect(screen.getByText(/no subreddits found/i)).toBeInTheDocument()

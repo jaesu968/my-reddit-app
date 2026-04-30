@@ -20,12 +20,16 @@ export default function CommentList({ postId }) {
 			<Card.Body>
 				<Card.Title className="small text-muted">{comment.author}</Card.Title>
 				<div>
-					<ReactMarkdown 
-					remarkPlugins={[remarkGfm]}
-					rehypePlugins={[rehypeRaw]}
-					components={{ img: (props) => <img {...props} style={{ maxWidth: '100%'}} /> }}>
-						{comment.body}
-					</ReactMarkdown>
+					{comment.body ? (
+						<ReactMarkdown 
+						remarkPlugins={[remarkGfm]}
+						rehypePlugins={[rehypeRaw]}
+						components={{ img: (props) => <img {...props} style={{ maxWidth: '100%'}} /> }}>
+							{comment.body}
+						</ReactMarkdown>
+					) : (
+						<p className="text-muted fst-italic">No content for this comment.</p>
+					)}
 				</div>
 			</Card.Body>
 		</Card>
