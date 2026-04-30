@@ -12,6 +12,9 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 
 ## Technologies Used
 
+- HTML
+- CSS
+- JavaScript
 - React 19
 - Vite 8
 - Redux Toolkit
