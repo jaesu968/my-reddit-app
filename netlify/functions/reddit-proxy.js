@@ -1,45 +1,115 @@
 // Netlify serverless function that proxies requests to Reddit.
-// This is needed because the _redirects proxy rule cannot set custom request headers.
-// Reddit returns 403 from datacenter IPs unless a User-Agent header is present.
+// In production, app-only OAuth is the most reliable way to avoid 403 from cloud IP ranges.
+
+let cachedToken = null
+let cachedTokenExpiresAt = 0
+
+const DEFAULT_USER_AGENT = 'web:reddit-mini-app:v1.0.0 (by /u/reddit-mini-app)'
+
+const getOAuthToken = async (clientId, clientSecret, userAgent) => {
+    const now = Date.now()
+    if (cachedToken && now < cachedTokenExpiresAt - 60_000) {
+        return cachedToken
+    }
+
+    const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+    const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+        method: 'POST',
+        headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': userAgent,
+        },
+        body: 'grant_type=client_credentials',
+    })
+
+    if (!response.ok) {
+        throw new Error(`OAuth token request failed: ${response.status} ${response.statusText}`)
+    }
+
+    const tokenPayload = await response.json()
+    cachedToken = tokenPayload.access_token
+    cachedTokenExpiresAt = now + (tokenPayload.expires_in || 3600) * 1000
+    return cachedToken
+}
+
+const fetchWithPublicFallback = async (redditPath, queryString, userAgent) => {
+    const hosts = ['https://www.reddit.com', 'https://old.reddit.com', 'https://api.reddit.com']
+    let response = null
+    let resolvedUrl = ''
+
+    for (const host of hosts) {
+        const url = `${host}${redditPath}${queryString}`
+        console.log('[reddit-proxy] fallback fetch:', url)
+        response = await fetch(url, {
+            headers: {
+                'User-Agent': userAgent,
+                Accept: 'application/json, text/plain, */*',
+            },
+        })
+
+        if (response.status !== 403 && response.status !== 429) {
+            resolvedUrl = url
+            break
+        }
+    }
+
+    return { response, resolvedUrl: resolvedUrl || 'fallback exhausted' }
+}
+
 export const handler = async (event) => {
-    // event.path is the function's own path when called via redirect without :splat.
-    // Use event.rawUrl to reliably get the original request URL (e.g. /api/subreddits/popular.json).
     const originalPath = new URL(event.rawUrl).pathname
     const redditPath = originalPath.replace(/^\/api/, '') || '/'
     const queryString = event.rawQuery ? `?${event.rawQuery}` : ''
-    const hosts = ['https://www.reddit.com', 'https://old.reddit.com', 'https://api.reddit.com']
+
+    const clientId = process.env.REDDIT_CLIENT_ID
+    const clientSecret = process.env.REDDIT_CLIENT_SECRET
+    const userAgent = process.env.REDDIT_USER_AGENT || DEFAULT_USER_AGENT
 
     try {
         let response
-        let resolvedUrl = ''
+        let resolvedUrl
 
-        for (const host of hosts) {
-            const url = `${host}${redditPath}${queryString}`
-            console.log('[reddit-proxy] originalPath:', originalPath, '→ fetching:', url)
-            response = await fetch(url, {
+        if (clientId && clientSecret) {
+            const token = await getOAuthToken(clientId, clientSecret, userAgent)
+            const oauthUrl = `https://oauth.reddit.com${redditPath}${queryString}`
+            console.log('[reddit-proxy] oauth fetch:', oauthUrl)
+
+            response = await fetch(oauthUrl, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                    'Accept': 'application/json, text/plain, */*',
-                    'Accept-Language': 'en-US,en;q=0.9',
-                    'Accept-Encoding': 'gzip, deflate, br',
-                    'Cache-Control': 'no-cache',
+                    Authorization: `Bearer ${token}`,
+                    'User-Agent': userAgent,
+                    Accept: 'application/json, text/plain, */*',
                 },
             })
+            resolvedUrl = oauthUrl
 
-            // Retry on common edge-block statuses from Reddit.
-            if (response.status !== 403 && response.status !== 429) {
-                resolvedUrl = url
-                break
+            // If token expires or is rejected, refresh once and retry.
+            if (response.status === 401 || response.status === 403) {
+                cachedToken = null
+                cachedTokenExpiresAt = 0
+                const freshToken = await getOAuthToken(clientId, clientSecret, userAgent)
+                response = await fetch(oauthUrl, {
+                    headers: {
+                        Authorization: `Bearer ${freshToken}`,
+                        'User-Agent': userAgent,
+                        Accept: 'application/json, text/plain, */*',
+                    },
+                })
             }
+        } else {
+            const fallback = await fetchWithPublicFallback(redditPath, queryString, userAgent)
+            response = fallback.response
+            resolvedUrl = fallback.resolvedUrl
         }
 
         const body = await response.text()
-        console.log('[reddit-proxy] status:', response.status, 'from:', resolvedUrl || 'fallback exhausted')
+        console.log('[reddit-proxy] originalPath:', originalPath, 'status:', response.status, 'from:', resolvedUrl)
 
         return {
             statusCode: response.status,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': response.headers.get('content-type') || 'application/json',
                 'Access-Control-Allow-Origin': '*',
             },
             body,
@@ -47,6 +117,10 @@ export const handler = async (event) => {
     } catch (err) {
         return {
             statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
             body: JSON.stringify({ error: err.message }),
         }
     }
