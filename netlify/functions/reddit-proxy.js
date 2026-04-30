@@ -6,6 +6,7 @@ export const handler = async (event) => {
     const redditPath = event.path.replace(/^\/api/, '') || '/'
     const queryString = event.rawQuery ? `?${event.rawQuery}` : ''
     const url = `https://www.reddit.com${redditPath}${queryString}`
+    console.log('[reddit-proxy] event.path:', event.path, '→ fetching:', url)
 
     try {
         const response = await fetch(url, {
