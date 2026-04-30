@@ -10,8 +10,8 @@ export default function SubredditCard({subreddit, onSelect, isSelected}) {
 			borderColor: isSelected ? 'var(--accent)' : 'transparent'
 		 }}> 
 			<Card.Body className="py-2 px-3">
-				<div className="d-flex justify-content-between align-items-center gap-3 mb-3">
-					<Card.Title as="h3" className="h5 mb-0">
+				<div className="d-flex justify-content-between align-items-center gap-3 w-100">
+					<Card.Title as="h3" className="h5 mb-0 text-truncate">
 						{subreddit.display_name}
 					</Card.Title>
 				</div>

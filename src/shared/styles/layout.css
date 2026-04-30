@@ -73,6 +73,7 @@
 
 .feed-card {
   transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  overflow: hidden; 
 }
 
 .feed-card:hover {
@@ -132,4 +133,11 @@
 }
 .loading-state span {
   animation: pulse 1.4s ease-in-out infinite; 
+}
+/* word wrap for posts */ 
+.feed-card .card-title, 
+.feed-card .card-text,
+.feed-card p {
+  overflow-wrap: anywhere; 
+  word-break: break-word; 
 }

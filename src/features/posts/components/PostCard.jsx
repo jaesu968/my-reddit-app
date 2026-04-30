@@ -55,7 +55,7 @@ export default function PostCard({ post, onSelect, isSelected }) {
 					>▼</button>
 				</div>
 				{/* Content column */}
-				<div className="flex-grow-1 d-flex flex-column">
+				<div className="flex-grow-1 d-flex flex-column min-width: 0">
 					<Card.Title as="h3" className="h5 mb-2">{post.title}</Card.Title>
 					{image && (
 						<img
