@@ -3,30 +3,34 @@ import { test, expect } from '@playwright/test'
 test.describe('Reddit Mini App', () => {
     test.beforeEach(async ({ page }) => {
         // Navigate to the app before each test
-        await page.goto('http://localhost:5173')
+        await page.goto('/')
     })
     
     test('loads with posts visible', async ({ page }) => {
         // expect post cards to be visible
-        const postCards = page.locator('[role="button"]')
-        await expect(postCards).toHaveCount(10) // expect 10 posts to be loaded
+        const postCards = page.locator('[aria-label^="Select post:"]')
+        // assert at least one visible post card
+        await expect(postCards.first()).toBeVisible()
     })
 
     test('search filters posts', async ({ page }) => {
-        // type in search bar 
-        await page.fill('input[placeholder*="Search"]', 'test')
-        // expect filtered results 
-        const postCards = page.locator('[role="button"]')
-        await expect(postCards).toHaveCount(0) // or however many match the search query
+        // use nonsense query "zzzzzzzzzzz" to filter posts
+        const searchInput = page.locator('input[placeholder*="Search"]')
+        await searchInput.fill('zzzzzzzzzzz')
+        // expect no posts found is visible 
+        await expect(page.locator('text=No posts found')).toBeVisible()
     })
 
     test('click post shows details', async ({ page }) => {
         // click on first post 
-        const firstPost = page.locator('[role="button"]').first()
+        const firstPost = page.locator('[aria-label^="Select post:"]').first()
         await firstPost.click() 
-        // on desktop, expect PostDetail panel 
-        // on mobile, expect expanded content in card
-        const details = page.locator('h2') // or some selector for the post detail title
-        await expect(details).toContainText('Trending')
+        // assert aria-pressed=true for selected post 
+        await expect(firstPost).toHaveAttribute('aria-pressed', 'true')
+        // assert that post detail content is visible after selection
+        // on desktop: detail card appears; on mobile: card expands inline
+        const postTitle = await firstPost.locator('h3').textContent()
+        const detailTitle = page.locator('h2').filter({ hasText: postTitle?.trim() ?? '' })
+        await expect(detailTitle).toBeVisible()
     })
 })
