@@ -6,8 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setSelectedSubreddit } from '../subredditSlice'
 import Loading from '../../../shared/components/Loading'
 import ErrorState from '../../../shared/components/ErrorState'
-import { useState } from 'react'
-import SearchBar from '../../../shared/components/SearchBar'
 
 // Returns true when subreddit fields match the normalized search term.
 const matchesSubreddit = (subreddit, searchTerm) => {
@@ -18,25 +16,13 @@ const matchesSubreddit = (subreddit, searchTerm) => {
 	)
 }
 
-export default function SubredditList() {
+export default function SubredditList({ query = '', onQueryChange = () => {} }) {
 	// Pull subreddit data/status from Redux through the feature hook.
 	const { items, status, error } = useSubreddits()
 	// Dispatch updates selected subreddit when a card is clicked.
 	const dispatch = useDispatch()
 	// Used to apply selected styling to the active subreddit card.
 	const selectedSubreddit = useSelector((state) => state.subreddits.selectedSubreddit)
-	// Local search text for client-side filtering.
-	const [query, setQuery] = useState('')
-
-	// Keep form submit from triggering a page refresh.
-	const handleSearchSubmit = (e) => {
-		e.preventDefault()
-	}
-
-	// Reset the search input to show all visible subreddits again.
-	const handleClearSearch = () => {
-		setQuery('')
-	}
 
 	// Save clicked subreddit as the current selection in Redux.
 	const handleSelectSubreddit = (subreddit) => {
@@ -77,15 +63,6 @@ export default function SubredditList() {
 
 	return (
 		<>
-			<SearchBar
-				value={query}
-				onChange={setQuery}
-				onSubmit={handleSearchSubmit}
-				onClear={handleClearSearch}
-				placeholder="Search subreddits..."
-				ariaLabel="Search subreddits"
-				isLoading={status === 'loading'}
-			/>
 			{hasNoResults ? (
 				<p className="text-muted mt-3">No subreddits found matching your search query.</p>
 			) : (

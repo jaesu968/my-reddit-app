@@ -11,8 +11,8 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<PostPage />} />
-        <Route path="/posts" element={<PostPage />} />
-        <Route path="/subreddits" element={<SubredditPage/>} />
+        <Route path="/posts" element={<PostPage {...{ query: '', onQueryChange: () => {} }}/>} />
+        <Route path="/subreddits" element={<SubredditPage {...{ query: '', onQueryChange: () => {} }}/>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

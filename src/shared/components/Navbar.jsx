@@ -20,8 +20,8 @@ export default function AppNavbar({ query = '', onQueryChange = () => {} }) {
             value={query}
             onChange={onQueryChange}
             onSubmit={(e) => e.preventDefault()}
-            placeholder="Search posts..."
-            ariaLabel="Search posts"
+            placeholder="Search posts and subreddits..."
+            ariaLabel="Search posts and subreddits"
             showButton={false}
           />
         </div>

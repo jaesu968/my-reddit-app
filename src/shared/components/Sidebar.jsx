@@ -7,7 +7,7 @@ import SubredditList from '../../features/subreddits/components/SubredditList'
 // it loads the subreddit posts in the main feed. 
 
 
-export default function Sidebar() {
+export default function Sidebar({query = '', onQueryChange = () => {}}) {
   return (
     <aside>
       <Stack gap={3} className="sidebar-card">
@@ -19,7 +19,7 @@ export default function Sidebar() {
             View All
           </Link>
         </div>
-        <SubredditList className="border-0 shadow-sm feed-card" />
+        <SubredditList className="border-0 shadow-sm feed-card" query={query} onQueryChange={onQueryChange} />
       </Stack>
     </aside>
   )

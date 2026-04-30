@@ -23,7 +23,7 @@ export default function Layout({ children }) {
             </main>
           </Col>
           <Col xs={12} lg={4} xl={3}>
-            <Sidebar />
+            <Sidebar {...{ query, onQueryChange: setQuery }} />
           </Col>
         </Row>
       </Container>

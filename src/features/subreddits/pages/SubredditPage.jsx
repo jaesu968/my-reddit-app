@@ -17,7 +17,7 @@ export default function SubredditPage({ query = '' }) {
 
 			<Row className="g-4 align-items-start">
 				<Col xs={12} xl={5}>
-					<SubredditList />
+					<SubredditList query={query} onQueryChange={() => {}} />
 				</Col>
 				<Col xs={12} xl={7}>
 					<PostList query={query} />
