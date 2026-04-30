@@ -5,7 +5,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/reddit-proxy/:splat"
+  to = "/.netlify/functions/reddit-proxy"
   status = 200
 
 [[redirects]]
