@@ -1,7 +1,6 @@
 # Reddit Mini
 
-A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and Bootstrap.  
-The current version focuses on a clean UI shell, route-based navigation, and consistent component styling while data/API integration is prepared.
+A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and Bootstrap. Browse Reddit's popular posts, explore subreddits, read comments, and search content — all in a responsive, animated UI.
 
 ## Wireframes
 
@@ -21,20 +20,23 @@ The current version focuses on a clean UI shell, route-based navigation, and con
 - Bootstrap 5
 - React Bootstrap
 - ESLint 9
+- react-markdown
+- remark-gfm
+- rehype-raw
+- Vitest + @testing-library/react
 
 ## Features
 
-- Route-based pages for:
-  - Home
-  - Posts
-  - Explore
-  - Not Found
-- Right-side sidebar with subreddit-focused cards
-- Posts-first Home page
-- Responsive Bootstrap grid/card layout
-- Consistent app color theme matched to branding/logo color (`#98B539`)
-- Redirect support from `/subreddits` to `/explore`
-- Reusable feature-first project structure (`features/`, `shared/`, `app/`)
+- Live Reddit API integration via Vite proxy 
+- Browse top posts from Reddit's popular feed
+- Browse and select subreddits -- auto-loads posts for that community
+- View post details with full markdown body rendering 
+- Comments loaded per post (top 10, with image support)
+- Client-side upvote/downvote on posts
+- Global search bar filters posts and subreddits simultaneously
+- Responsive layout -- works desktop to mobile 
+- Error boundary -- graceful fallback on render errors
+- Animations - card hover lift, PostDetail slide-in, loading pulse, selection transitions
 
 ## Project Structure
 
@@ -48,7 +50,19 @@ The current version focuses on a clean UI shell, route-based navigation, and con
 1. Install dependencies:
    ```bash
    npm install
-2. Run the project
-   npm run dev (in dev environment)
-   npm run build (build for production)
-   npm run preview (preview production build)
+   ```
+2. Run the project:
+   ```bash
+   npm run dev      # development server
+   npm run build    # production build
+   npm run preview  # preview production build
+   ```
+
+## Possible Future Work 
+
+- Remote Reddit search (beyond locally fetched data)
+- Pagination / load more posts
+- Persistent vote state in Redux
+- Nested comment threading 
+- OAuth login for real voting/posting
+- Progressive Web App (PWA) support   
