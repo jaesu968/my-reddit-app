@@ -40,6 +40,7 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 - Paginated feed — shows 8 posts initially with a "Load more" button
 - Optimised images — selects the smallest sufficient Reddit preview variant (~600px) to reduce bandwidth
 - Lazy loading — off-screen post images load on demand; only the first post image is eagerly fetched
+- Production API resilience — Netlify proxy uses OAuth when configured and automatically falls back to Reddit public JSON if credentials are unavailable
 - Responsive layout — works desktop to mobile
 - Error boundary — graceful fallback on render errors
 - Animations — card hover lift, PostDetail slide-in, loading pulse, selection transitions
@@ -63,6 +64,25 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 ![Search Functionality Screenshot](src/assets/SearchFunctionFilterScreenshot.JPG)
 
 ## Testing
+
+### Netlify API Proxy Fallback
+
+Production API requests go through the Netlify function at `netlify/functions/reddit-proxy.js`.
+
+- If `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are set, the proxy uses app-only OAuth (`https://oauth.reddit.com`).
+- If credentials are missing, the proxy automatically falls back to Reddit's public JSON endpoints (`https://www.reddit.com`) so the app keeps working.
+- If OAuth temporarily fails, the function retries via public mode instead of returning a hard failure.
+
+The proxy includes `X-Reddit-Auth-Mode` in responses so you can confirm the active mode in DevTools:
+
+- `oauth` = authenticated mode
+- `public` = fallback mode
+
+When your Reddit app is approved, add these Netlify environment variables and redeploy:
+
+- `REDDIT_CLIENT_ID`
+- `REDDIT_CLIENT_SECRET`
+- `REDDIT_USER_AGENT`
 
 ### Lighthouse Audit Results
 

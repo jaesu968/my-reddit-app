@@ -4,7 +4,28 @@
 let cachedToken = null
 let cachedTokenExpiresAt = 0
 
-const DEFAULT_USER_AGENT = ''
+const DEFAULT_USER_AGENT = 'reddit-mini-client/1.0 (by /u/reddit-mini-app)'
+
+const fetchPublicJson = async (redditPath, queryString, userAgent) => {
+    const publicUrl = `https://www.reddit.com${redditPath}${queryString}`
+    const response = await fetch(publicUrl, {
+        headers: {
+            'User-Agent': userAgent,
+            Accept: 'application/json, text/plain, */*',
+        },
+    })
+
+    const body = await response.text()
+    return {
+        statusCode: response.status,
+        headers: {
+            'Content-Type': response.headers.get('content-type') || 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'X-Reddit-Auth-Mode': 'public',
+        },
+        body,
+    }
+}
 
 const getOAuthToken = async (clientId, clientSecret, userAgent) => {
     const now = Date.now()
@@ -42,18 +63,9 @@ export const handler = async (event) => {
     const clientSecret = process.env.REDDIT_CLIENT_SECRET
     const userAgent = process.env.REDDIT_USER_AGENT || DEFAULT_USER_AGENT
 
-    if (!clientId || !clientSecret || !userAgent) {
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({
-                error:
-                    'Missing Reddit API configuration. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_USER_AGENT in Netlify environment variables.',
-            }),
-        }
+    if (!clientId || !clientSecret) {
+        console.warn('[reddit-proxy] Missing OAuth env vars. Falling back to public Reddit JSON API.')
+        return fetchPublicJson(redditPath, queryString, userAgent)
     }
 
     try {
@@ -95,17 +107,23 @@ export const handler = async (event) => {
             headers: {
                 'Content-Type': response.headers.get('content-type') || 'application/json',
                 'Access-Control-Allow-Origin': '*',
+                'X-Reddit-Auth-Mode': 'oauth',
             },
             body,
         }
     } catch (err) {
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({ error: err.message }),
+        console.error('[reddit-proxy] OAuth flow failed, falling back to public API:', err.message)
+        try {
+            return await fetchPublicJson(redditPath, queryString, userAgent)
+        } catch (fallbackErr) {
+            return {
+                statusCode: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({ error: fallbackErr.message }),
+            }
         }
     }
 }
