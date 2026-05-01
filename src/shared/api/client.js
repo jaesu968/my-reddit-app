@@ -4,6 +4,38 @@ import endpoints from './endpoints'
 // Use the local Vite proxy in development to avoid browser CORS blocks.
 // The proxy forwards /api/* requests to https://www.reddit.com/*.
 const BASE_URL = '/api'
+const ENABLE_MOCK_FALLBACK = import.meta.env.VITE_ENABLE_MOCK_FALLBACK !== 'false'
+
+const MOCK_SUBREDDIT = {
+    id: 'mock-subreddit-1',
+    display_name: 'learnprogramming',
+    title: 'learnprogramming',
+    public_description: 'Temporary mock subreddit shown while Reddit API credentials are unavailable.',
+    url: '/r/learnprogramming/',
+}
+
+const buildMockPost = (subreddit = 'learnprogramming') => ({
+    id: 'mock-post-1',
+    title: 'Temporary mock post: Reddit API is currently unavailable',
+    selftext:
+        'This is placeholder content so the app remains usable until Reddit API credentials are configured. Once API access is available, live posts will load automatically.',
+    author: 'reddit-mini-bot',
+    score: 123,
+    num_comments: 7,
+    subreddit_name_prefixed: `r/${subreddit}`,
+    created_utc: Math.floor(Date.now() / 1000),
+    permalink: `/r/${subreddit}/comments/mock-post-1`,
+    url: 'https://www.reddit.com',
+    thumbnail: '',
+})
+
+const fallbackWithMock = (label, err, fallbackData) => {
+    if (!ENABLE_MOCK_FALLBACK) {
+        throw err
+    }
+    console.warn(`[redditApi] ${label} failed, returning mock data:`, err.message)
+    return fallbackData
+}
 
 // buildUrl takes a path like '/r/popular.json' and an optional params object like { q: 'cats', sort: 'new' }
 // It returns a full URL string like 'https://www.reddit.com/r/popular.json?q=cats&sort=new'
@@ -52,22 +84,31 @@ const redditApi = {
     // Reddit response shape: { data: { children: [{ data: postObject }, ...] } }
     // We unwrap .data on each child to get a flat array of post objects
     getPosts: async () => {
-        await rateLimit()
-        const url = buildUrl(endpoints.getPosts())
-        const response = await fetch(url)
-        checkResponse(response)
-        const data = await response.json()
-        return data.data.children.map((child) => child.data)
+        try {
+            await rateLimit()
+            const url = buildUrl(endpoints.getPosts())
+            const response = await fetch(url)
+            checkResponse(response)
+            const data = await response.json()
+            return data.data.children.map((child) => child.data)
+        } catch (err) {
+            return fallbackWithMock('getPosts', err, [buildMockPost()])
+        }
     },
     // Fetches posts for a specific subreddit (e.g. 'reactjs' → /r/reactjs.json)
     // The subreddit name is normalized in endpoints.js (strips leading 'r/' if present)
     getPostsBySubreddit: async (subreddit) => {
-        await rateLimit()
-        const url = buildUrl(endpoints.getPostsBySubreddit(subreddit))
-        const response = await fetch(url)
-        checkResponse(response)
-        const data = await response.json()
-        return data.data.children.map((child) => child.data)
+        try {
+            await rateLimit()
+            const url = buildUrl(endpoints.getPostsBySubreddit(subreddit))
+            const response = await fetch(url)
+            checkResponse(response)
+            const data = await response.json()
+            return data.data.children.map((child) => child.data)
+        } catch (err) {
+            const normalized = (subreddit || 'learnprogramming').replace(/^r\//i, '').trim() || 'learnprogramming'
+            return fallbackWithMock('getPostsBySubreddit', err, [buildMockPost(normalized)])
+        }
     },
     // Fetches comments for a post by its ID
     // Reddit's comments endpoint returns a 2-element array:
@@ -97,12 +138,16 @@ const redditApi = {
     // Fetches a list of popular subreddits for the sidebar
     // Same response shape as posts — array of children, each with a .data object
     getSubreddits: async () => {
-        await rateLimit()
-        const url = buildUrl(endpoints.getSubreddits())
-        const response = await fetch(url)
-        checkResponse(response)
-        const data = await response.json()
-        return data.data.children.map((child) => child.data)
+        try {
+            await rateLimit()
+            const url = buildUrl(endpoints.getSubreddits())
+            const response = await fetch(url)
+            checkResponse(response)
+            const data = await response.json()
+            return data.data.children.map((child) => child.data)
+        } catch (err) {
+            return fallbackWithMock('getSubreddits', err, [MOCK_SUBREDDIT])
+        }
     },
 }   
 
