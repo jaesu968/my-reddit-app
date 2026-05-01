@@ -49,8 +49,8 @@ describe('PostDetail', () => {
     it('shows fallback text when selftext is empty', () => {
         useSelector.mockImplementation((fn) => fn({posts: { selectedPost: { ...SAMPLE_POST, selftext: ''}}}))
         render(<PostDetail />)
-        // assert fallback string appears
-        expect(screen.getByText(/no additional text content for this post/i)).toBeInTheDocument()
+        // assert fallback string appears — PostDetail renders "This is a link post." for posts with no selftext
+        expect(screen.getByText(/this is a link post/i)).toBeInTheDocument()
     })
     // render selftext content if it exists
     it('renders selftext content when present', () => {

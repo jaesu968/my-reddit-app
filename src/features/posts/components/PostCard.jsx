@@ -4,7 +4,24 @@ import Card from 'react-bootstrap/Card'
 import CommentList from '../../comments/components/CommentList' // import CommentList to display comments for the selected post
 import { useRef, useEffect } from 'react' // import useEffect and useRef to manage scroll behavior when a new post is selected
 
-export default function PostCard({ post, onSelect, isSelected }) {
+// helpers for preview url and best preview image
+const decodePreviewUrl = (url = '') => url.replace(/&amp;/g, '&')
+const pickBestPreviewImage = (previewImage, targetWidth = 600) => {
+	if (!previewImage) return null
+	const candidates = [...(previewImage.resolutions || []), previewImage.source]
+		.filter(Boolean)
+		.map((img) => ({
+			url: decodePreviewUrl(img.url || ''),
+			width: img.width,
+			height: img.height,
+		}))
+		.filter((img) => img.url)
+	if (!candidates.length) return null
+	const sorted = candidates.sort((a, b) => (a.width || 0) - (b.width || 0))
+	return sorted.find((img) => (img.width || 0) >= targetWidth) || sorted[sorted.length - 1]
+}
+
+export default function PostCard({ post, onSelect, isSelected, imagePriority = 'low' }) {
 	const [voteDir, setVoteDir] = useState(0) // 1 = upvoted, -1 = downvoted, 0 = neutral
 	const titleId = `post-title-${post.id}`
 	const displayScore = post.score + voteDir // adjust score based on vote direction
@@ -13,13 +30,14 @@ export default function PostCard({ post, onSelect, isSelected }) {
 	const numComments = post.num_comments ?? 0 // number of comments, default to 0 if undefined
 
 	// Decode HTML entities in Reddit preview URLs (e.g. &amp; → &)
-	const previewImage = post.preview?.images?.[0]?.source?.url?.replace(/&amp;/g, '&')
-	const previewWidth = post.preview?.images?.[0]?.source?.width
-	const previewHeight = post.preview?.images?.[0]?.source?.height
+	const previewImage = post.preview?.images?.[0]
+	const bestPreviewImage = pickBestPreviewImage(previewImage, 600)
+	const previewWidth = bestPreviewImage?.width
+	const previewHeight = bestPreviewImage?.height
 	const thumbnail = post.thumbnail && !['self', 'default', 'nsfw', 'image', ''].includes(post.thumbnail)
-		? post.thumbnail
+		? decodePreviewUrl(post.thumbnail)
 		: null
-	const image = previewImage || thumbnail
+	const image = bestPreviewImage?.url || thumbnail
 
 	const handleUpvote = (e) => {
 		e.stopPropagation()
@@ -103,6 +121,9 @@ export default function PostCard({ post, onSelect, isSelected }) {
 									height={previewHeight}
 									className="img-fluid rounded mb-2"
 									style={{ maxHeight: '200px', objectFit: 'cover'}}
+									loading={imagePriority === 'high' ? 'eager' : 'lazy'}
+									fetchpriority={imagePriority === 'high' ? 'high' : 'low'}
+									decoding="async"
 								/>
 							)}
 							{!image && post.selftext && (

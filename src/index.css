@@ -44,6 +44,7 @@
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #b2cf52;
+    --accent-strong: #b2cf52;
     --accent-bg: rgba(178, 207, 82, 0.18);
     --accent-border: rgba(178, 207, 82, 0.55);
     --social-bg: rgba(47, 48, 58, 0.5);
@@ -134,10 +135,10 @@ code {
 }
 
 .btn-outline-primary {
-  --bs-btn-color: var(--accent);
-  --bs-btn-border-color: var(--accent);
-  --bs-btn-hover-bg: var(--accent);
-  --bs-btn-hover-border-color: var(--accent);
-  --bs-btn-active-bg: color-mix(in srgb, var(--accent) 88%, black);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--accent) 88%, black);
+  --bs-btn-color: var(--accent-strong);
+  --bs-btn-border-color: var(--accent-strong);
+  --bs-btn-hover-bg: var(--accent-strong);
+  --bs-btn-hover-border-color: var(--accent-strong);
+  --bs-btn-active-bg: color-mix(in srgb, var(--accent-strong) 88%, black);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--accent-strong) 88%, black);
 }

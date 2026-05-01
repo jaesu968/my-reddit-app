@@ -7,9 +7,9 @@ import SearchBar from './SearchBar'
 export default function AppNavbar({ query = '', onQueryChange = () => {} }) {
 
   return (
-    <Navbar bg="light" expand="lg" className="border-bottom shadow-sm sticky-top">
+    <Navbar expand="lg" className="app-navbar border-bottom shadow-sm sticky-top">
       <Container fluid="lg">
-        <Navbar.Brand as={NavLink} to="/" className="fw-semibold text-dark d-inline-flex align-items-center gap-2">
+        <Navbar.Brand as={NavLink} to="/" className="fw-semibold d-inline-flex align-items-center gap-2">
           <img src={RedditLogo} alt="Reddit Logo" width="60" height="60" className="d-block" />
 		  <span className="brand-title">
 			<span className="brand-reddit">Reddit</span>Mini

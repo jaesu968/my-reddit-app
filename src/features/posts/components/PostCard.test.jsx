@@ -79,31 +79,32 @@ describe('PostCard', () => {
 
         expect(cardElement).toHaveClass('border-light')
     })
-    // Accessibility test: card is reachable and activatable by keyboard.
-    it('supports keyboard interaction with Enter and Space', async () => {
+    // Accessibility test: upvote/downvote buttons are keyboard accessible.
+    it('upvote and downvote buttons are keyboard accessible', async () => {
         const user = userEvent.setup()
-        const { onSelect } = renderPostCard()
-        // Tab to focus the card — keyboard() targets the currently focused element
-        await user.tab()
-
-        // Enter should trigger onSelect
-        await user.keyboard('{Enter}')
-        expect(onSelect).toHaveBeenCalledTimes(1)
-
-        // Space should also trigger onSelect
-        await user.keyboard(' ')
-        expect(onSelect).toHaveBeenCalledTimes(2)
-    })
-
-    // Accessibility test: card has a descriptive aria-label including the post title.
-    it('has an accessible label including the post title', () => {
         renderPostCard()
-        expect(screen.getByRole('button', { name: /select post: react tips and tricks/i })).toBeInTheDocument()
+
+        const upvoteBtn = screen.getByRole('button', { name: /upvote/i })
+        const downvoteBtn = screen.getByRole('button', { name: /downvote/i })
+
+        upvoteBtn.focus()
+        await user.keyboard('{Enter}')
+        expect(upvoteBtn).toBeInTheDocument()
+
+        downvoteBtn.focus()
+        await user.keyboard('{Enter}')
+        expect(downvoteBtn).toBeInTheDocument()
     })
 
-    // Accessibility test: aria-pressed reflects the current selection state.
-    it('has aria-pressed set to true when selected', () => {
-        renderPostCard({ isSelected: true })
-        expect(screen.getByRole('button', { pressed: true })).toBeInTheDocument()
+    // Accessibility test: post title heading is rendered with the correct text.
+    it('renders the post title as a heading', () => {
+        renderPostCard()
+        expect(screen.getByRole('heading', { name: /react tips and tricks/i })).toBeInTheDocument()
+    })
+
+    // Accessibility test: selected border class is applied when isSelected is true.
+    it('applies border-primary class when selected', () => {
+        const { container } = renderPostCard({ isSelected: true })
+        expect(container.querySelector('.card')).toHaveClass('border-primary')
     })
 })

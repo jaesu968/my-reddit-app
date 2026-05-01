@@ -25,7 +25,7 @@ export default class ErrorBoundary extends React.Component {
           <Card.Header>Something went wrong. Try Again.</Card.Header>
           <Card.Body>
             <p>{this.state.error?.message || 'An unexpected error occurred.'}</p>
-            <button className="btn btn-primary" onClick={() => this.setState({ hasError: false, error: null })}>
+            <button className="btn btn-outline-secondary" onClick={() => this.setState({ hasError: false, error: null })}>
               Try Again
             </button>
           </Card.Body>

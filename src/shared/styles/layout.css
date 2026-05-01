@@ -107,6 +107,14 @@
 }
 
 /* styling for navbar*/
+.app-navbar {
+  background-color: var(--bg) !important;
+}
+
+.brand-title {
+  color: var(--text-h);
+}
+
 .brand-reddit {
   color: var(--accent-strong);
   line-height: 1;
@@ -140,4 +148,12 @@
 .feed-card p {
   overflow-wrap: anywhere; 
   word-break: break-word; 
+}
+/* give btn outline primary override to provide more contrast for "load more posts" button*/
+.btn-outline-primary {
+  --bs-btn-color: var(--accent-strong); 
+  --bs-btn-border-color: var(--accent-strong); 
+  --bs-btn-hover-bg: var(--accent-strong); 
+  --bs-btn-hover-border-color: var(--accent-strong); 
+  /* leave active lines as-is */ 
 }
