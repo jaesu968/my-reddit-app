@@ -52,7 +52,7 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 - `src/shared` - shared UI components, API stubs, hooks, styles, and utilities
 - `src/pages` - route-level pages
 
-## Screenshots of Web App
+## Screenshots of Web App (of app working locally using json)
 
 ### Desktop Screenshot
 ![Desktop Screenshot](src/assets/DesktopScreenshot.JPG)
