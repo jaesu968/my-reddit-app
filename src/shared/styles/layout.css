@@ -20,7 +20,7 @@
   letter-spacing: 0.08em;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6c757d;
+  color: color-mix(in srgb, var(--text-h) 65%, var(--bg));
 }
 
 .page-eyebrow::before {
@@ -108,7 +108,7 @@
 
 /* styling for navbar*/
 .brand-reddit {
-  color: var(--accent);
+  color: var(--accent-strong);
   line-height: 1;
 }
 /* smooth slide in animation*/
