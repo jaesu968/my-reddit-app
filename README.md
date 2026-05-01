@@ -51,13 +51,16 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 - `src/shared` - shared UI components, API stubs, hooks, styles, and utilities
 - `src/pages` - route-level pages
 
-## Screenshots of Web App 
-- `Desktop Screenshot`
-![DesktopScreenshot](src/assets/DesktopScreenshot.JPG)
-- `Small Screen / Mobile Device size Screenshot`
-<img src="src/assets/SmallScreen_Screenshot.JPG" alt="SmallScreens" width="320" style="max-width: 100%; height: auto;" />
-- `Search Functionality Screenshot`
-![SearchFunctionality](src/assets/SearchFunctionFilterScreenshot.JPG)
+## Screenshots of Web App
+
+### Desktop Screenshot
+![Desktop Screenshot](src/assets/DesktopScreenshot.JPG)
+
+### Small Screen / Mobile Device Screenshot
+<img src="src/assets/SmallScreen_Screenshot.JPG" alt="Small Screen Screenshot" width="320" />
+
+### Search Functionality Screenshot
+![Search Functionality Screenshot](src/assets/SearchFunctionFilterScreenshot.JPG)
 
 ## Testing
 
