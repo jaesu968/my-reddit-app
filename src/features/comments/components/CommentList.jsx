@@ -7,14 +7,13 @@ import remarkGfm from 'remark-gfm' // import remarkGfm to support GitHub Flavore
 import rehypeRaw from 'rehype-raw' // import rehypeRaw to allow raw HTML (e.g. images) in comment bodies
 
 export default function CommentList({ postId }) {
-	// hook call to get comments data and status
 	const { items, status, error } = useComments(postId)
-	// render loading state, error state, or comments list based on the status of the comments data
+
 	if (!postId) return <Card>...Select a post to view comments</Card>
 	if (status === 'loading') return <Loading label="Loading comments..." />
 	if (status === 'failed') return <ErrorState message={error} />
-	// render comments in a list format using Boostrap Card components
-	// slice the first 10 comments to keep the UI manageable, and then map over them to create a card for each comment
+
+	// Cap at 10 comments to keep the panel a manageable length.
 	const commentItems = items.slice(0, 10).map((comment) => (
 		<Card key={comment.id} className="mb-3">
 			<Card.Body>

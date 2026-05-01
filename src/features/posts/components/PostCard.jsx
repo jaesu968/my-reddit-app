@@ -1,11 +1,15 @@
-// PostCard component that displays individual post information in a card layout
 import { useState } from 'react'
 import Card from 'react-bootstrap/Card'
-import CommentList from '../../comments/components/CommentList' // import CommentList to display comments for the selected post
-import { useRef, useEffect } from 'react' // import useEffect and useRef to manage scroll behavior when a new post is selected
+import CommentList from '../../comments/components/CommentList'
+import { useRef, useEffect } from 'react'
 
-// helpers for preview url and best preview image
+// Reddit encodes preview URLs with HTML entities (e.g. &amp; instead of &).
+// decodePreviewUrl fixes those so the browser can actually load the image.
 const decodePreviewUrl = (url = '') => url.replace(/&amp;/g, '&')
+
+// Reddit provides multiple resolution variants for each preview image.
+// This picks the smallest one that meets the target width to avoid loading
+// oversized images. Falls back to the largest available if none are wide enough.
 const pickBestPreviewImage = (previewImage, targetWidth = 600) => {
 	if (!previewImage) return null
 	const candidates = [...(previewImage.resolutions || []), previewImage.source]
@@ -21,15 +25,18 @@ const pickBestPreviewImage = (previewImage, targetWidth = 600) => {
 	return sorted.find((img) => (img.width || 0) >= targetWidth) || sorted[sorted.length - 1]
 }
 
+// imagePriority: 'high' for the first card in the feed (above the fold), 'low' for all others.
+// This maps to fetchpriority and loading attributes on the preview image.
 export default function PostCard({ post, onSelect, isSelected, imagePriority = 'low' }) {
-	const [voteDir, setVoteDir] = useState(0) // 1 = upvoted, -1 = downvoted, 0 = neutral
+	// voteDir tracks the user's local vote: 1 = upvoted, -1 = downvoted, 0 = neutral.
+	// Votes are client-side only — not persisted to Reddit's API.
+	const [voteDir, setVoteDir] = useState(0)
 	const titleId = `post-title-${post.id}`
-	const displayScore = post.score + voteDir // adjust score based on vote direction
-	const author = post.author // author of the post, displayed in the card metadata
-	const date = new Date(post.created_utc * 1000).toLocaleDateString() // formatted post date
-	const numComments = post.num_comments ?? 0 // number of comments, default to 0 if undefined
+	const displayScore = post.score + voteDir
+	const author = post.author
+	const date = new Date(post.created_utc * 1000).toLocaleDateString()
+	const numComments = post.num_comments ?? 0
 
-	// Decode HTML entities in Reddit preview URLs (e.g. &amp; → &)
 	const previewImage = post.preview?.images?.[0]
 	const bestPreviewImage = pickBestPreviewImage(previewImage, 600)
 	const previewWidth = bestPreviewImage?.width
@@ -48,17 +55,15 @@ export default function PostCard({ post, onSelect, isSelected, imagePriority = '
 		e.stopPropagation()
 		setVoteDir(v => v === -1 ? 0 : -1)
 	}
-	// boolean to check for screen size to conditionally render post details on large screens , versus expanding the card on small screens when selected.
+	// On mobile (<992px) selecting a post expands inline inside the card instead of
+	// showing a separate detail panel. 992px matches Bootstrap's lg breakpoint.
 	const isMobile = window.innerWidth < 992
-	// useRef to create a reference to the card element for managing scroll behavior when a post is selected on mobile devices
 	const expandedRef = useRef(null)
-	// useEffect to scroll to the expanded post details when a new post is selected on mobile devices,
-	//  ensuring the user sees the post content without having to manually scroll.
-	// check if isSelected or isMobile changes
+
+	// When the card expands on mobile, scroll it into view after a short delay
+	// so the animation has time to complete before the scroll fires.
 	useEffect(() => {
 		if(isSelected && isMobile) {
-			// if true call expandedRef.current?.scrollIntoView 
-			// add delay of 500ms to allow the card expansion animation to complete before scrolling, ensuring a smoother user experience.
 			setTimeout(() => {
 				expandedRef.current?.scrollIntoView({ behavior: 'smooth' })
 			}, 500)

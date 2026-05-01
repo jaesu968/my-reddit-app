@@ -149,11 +149,12 @@
   overflow-wrap: anywhere; 
   word-break: break-word; 
 }
-/* give btn outline primary override to provide more contrast for "load more posts" button*/
+/* Override Bootstrap's default blue btn-outline-primary with the app's accent colour.
+   --accent-strong is used instead of --accent because it meets the 4.5:1 WCAG contrast
+   ratio requirement against both light (#fff) and dark (#16171d) backgrounds. */
 .btn-outline-primary {
-  --bs-btn-color: var(--accent-strong); 
-  --bs-btn-border-color: var(--accent-strong); 
-  --bs-btn-hover-bg: var(--accent-strong); 
-  --bs-btn-hover-border-color: var(--accent-strong); 
-  /* leave active lines as-is */ 
+  --bs-btn-color: var(--accent-strong);
+  --bs-btn-border-color: var(--accent-strong);
+  --bs-btn-hover-bg: var(--accent-strong);
+  --bs-btn-hover-border-color: var(--accent-strong);
 }

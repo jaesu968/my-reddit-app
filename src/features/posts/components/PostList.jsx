@@ -24,27 +24,28 @@ export default function PostList({ query = '' }) {
 	const selectedUrl = (selectedSubreddit?.url || '').trim()
 	// Reddit's "Home" entry is a special feed, not a real /r/<name> subreddit endpoint.
 	const isHomeFeed = selectedName === 'home' || selectedUrl === '/'
-	// Always call hooks in the same order, then select the active dataset.
+	// Both hooks are always called regardless of which feed is active.
+	// React requires hooks to be called unconditionally — the active data
+	// is chosen afterwards based on the current subreddit selection.
 	const popularPosts = usePosts()
 	const subredditPosts = usePostsBySubreddit(selectedSubreddit?.display_name)
 	const { items, status, error } = selectedSubreddit && !isHomeFeed ? subredditPosts : popularPosts
-	// Dispatch updates selected post when a card is clicked.
 	const dispatch = useDispatch()
-	// Used to apply selected styling to the active card.
 	const selectedPost = useSelector((state) => state.posts.selectedPost)
-	// get initital visible posts 
-	const INITIAL_VISIBLE_POSTS = 8 
+
+	// Render posts in pages of 8 to limit initial DOM size and improve load performance.
+	const INITIAL_VISIBLE_POSTS = 8
 	const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_POSTS)
 
 	// Normalize query once, then reuse for filtering.
 	const normalizedQuery = query.trim().toLowerCase()
 
-	// Reset visible count when query or subreddit changes — must be before any early returns.
+	// Reset to the first page whenever the user changes the search query or switches subreddit.
+	// This hook must stay above the early returns below to avoid a hooks-order violation (React error #300).
 	useEffect(() => {
 		setVisibleCount(INITIAL_VISIBLE_POSTS)
 	}, [normalizedQuery, selectedSubreddit?.id])
 
-	// Save clicked post as the current selection in Redux.
 	const handleSelectPost = (post) => {
 		dispatch(setSelectedPost(post))
 	}
@@ -64,11 +65,10 @@ export default function PostList({ query = '' }) {
 		? items.filter((post) => matchesPost(post, normalizedQuery))
 		: items
 
-	// Determine if we should show the "Load More" button based on whether there are more posts to display.
 	const visiblePosts = filteredPosts.slice(0, visibleCount)
 	const hasMorePosts = visibleCount < filteredPosts.length
 
-	// Build list UI from filtered results.
+	// The first card gets high fetch priority so the browser loads its image early (LCP optimisation).
 	const postItems = visiblePosts.map((post, index) => (
 		<Col key={post.id}>
 			<PostCard 
