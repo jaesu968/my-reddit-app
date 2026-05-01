@@ -84,6 +84,46 @@ When your Reddit app is approved, add these Netlify environment variables and re
 - `REDDIT_CLIENT_SECRET`
 - `REDDIT_USER_AGENT`
 
+### Vercel Deployment (with Netlify Backup)
+
+This repo supports Vercel and Netlify at the same time.
+
+- **Vercel** uses `api/[...path].js` for production API proxy requests at `/api/*`.
+- **Netlify** keeps using `netlify/functions/reddit-proxy.js` and `netlify.toml`.
+- Frontend code does not change between hosts because all API calls target `/api`.
+
+#### Vercel setup
+
+1. Import this repository into Vercel.
+2. Confirm build settings:
+   - Build command: `npm run build`
+   - Output directory: `dist`
+3. Add environment variables in Vercel Project Settings:
+   - `REDDIT_CLIENT_ID`
+   - `REDDIT_CLIENT_SECRET`
+   - `REDDIT_USER_AGENT`
+4. Add variables to both **Preview** and **Production** environments.
+
+#### Routing behavior
+
+- `vercel.json` rewrites all non-API routes to `index.html` so React Router deep links work.
+- API routes are handled by Vercel serverless functions under `api/`.
+
+#### Verification checklist after deploy
+
+- Home page loads successfully.
+- Opening a deep link route directly does not return 404.
+- API requests to `/api/*` return Reddit JSON.
+- Response header `X-Reddit-Auth-Mode` appears:
+  - `oauth` when OAuth env vars are configured
+  - `public` when fallback mode is active
+
+#### Keeping Netlify as backup
+
+- Keep `netlify.toml` and `netlify/functions/reddit-proxy.js` in the repo.
+- Keep the Netlify site connected and deployable from the same branch.
+- If needed, rollback by repointing your domain/DNS back to Netlify.
+
 ### Lighthouse Audit Results
 
 Audits were run against the production build (`npm run build` + `npm run preview`) using Lighthouse 13 in headless Chrome. Scores are the median of 3 runs.
