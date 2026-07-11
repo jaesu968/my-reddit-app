@@ -41,6 +41,8 @@ A Reddit-style client built with React, Vite, Redux Toolkit, React Router, and B
 - Optimised images — selects the smallest sufficient Reddit preview variant (~600px) to reduce bandwidth
 - Lazy loading — off-screen post images load on demand; only the first post image is eagerly fetched
 - Production API resilience — Netlify proxy uses OAuth when configured and automatically falls back to Reddit public JSON if credentials are unavailable
+- Mock data fallback — if the Reddit API is unreachable entirely, posts and subreddits fall back to placeholder mock content so the UI stays usable
+- Client-side rate limiting — requests are spaced 6 seconds apart to stay within Reddit's ~10 requests/minute public API limit
 - Responsive layout — works desktop to mobile
 - Error boundary — graceful fallback on render errors
 - Animations — card hover lift, PostDetail slide-in, loading pulse, selection transitions
@@ -84,6 +86,16 @@ When your Reddit app is approved, add these Netlify environment variables and re
 - `REDDIT_CLIENT_SECRET`
 - `REDDIT_USER_AGENT`
 
+### Mock Data Fallback
+
+If an API request fails outright (for example, no network access or Reddit rejects the request), the client in `src/shared/api/client.js` returns placeholder mock data for posts and subreddits instead of showing an error, so the app stays browsable. A console warning (`[redditApi] ... failed, returning mock data`) indicates when mock mode is active.
+
+To disable this behavior and surface real errors instead, set:
+
+```bash
+VITE_ENABLE_MOCK_FALLBACK=false
+```
+
 ### Vercel Deployment (with Netlify Backup)
 
 This repo supports Vercel and Netlify at the same time.
@@ -103,6 +115,8 @@ This repo supports Vercel and Netlify at the same time.
    - `REDDIT_CLIENT_SECRET`
    - `REDDIT_USER_AGENT`
 4. Add variables to both **Preview** and **Production** environments.
+
+You can find the Vercel live app here: https://my-reddit-app-tan.vercel.app/
 
 #### Routing behavior
 
@@ -169,6 +183,16 @@ npm run e2e:debug     # step through tests with Playwright debugger
 ```
 
 > Playwright must have browsers installed: `npx playwright install`
+
+## CI/CD
+
+A GitHub Actions workflow (`.github/workflows/test.yml`) runs the unit test suite automatically:
+
+- **Triggers:** every push to `main` and every pull request targeting `main`
+- **Environment:** Ubuntu with Node.js 24
+- **Steps:** checkout → `npm ci` → `npm test` (Vitest)
+
+A failing test will mark the commit/PR with a red ❌ on GitHub; passing runs show a green ✅. Results appear under the repository's **Actions** tab.
 
 ---
 
